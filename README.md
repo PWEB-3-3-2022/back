@@ -6,6 +6,12 @@
 
 Recent [NodeJS](https://nodejs.org) with npm or [pnpm](https://pnpm.io) (recommended).
 
+#### Mongodb
+
+A [mongodb](https://www.mongodb.com/try/download/community) instance must be up and running.
+
+It is recommended to also install mongodb compass to set up and explore the database.
+
 ### Clone repo and install dependencies
 
 ```shell
@@ -21,6 +27,8 @@ pnpm install
 It is also recommended to setup your IDE to work with ESLint.
 
 ### Running
+
+Set `MONGODB_CONN` environment variable to your mongodb instance connection string. (e.g. `mongodb://localhost:27017/`)
 
 ```shell
 node app.js

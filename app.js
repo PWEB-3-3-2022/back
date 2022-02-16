@@ -1,9 +1,7 @@
 import express from 'express';
 import { MongoClient } from 'mongodb';
 
-const client = new MongoClient(
-  'mongodb://127.0.0.1:27017/tcflix?retryWrites=true&writeConcern=majority',
-);
+const client = new MongoClient(process.env.MONGODB_CONN);
 
 ((async () => {
   await client.connect();
@@ -15,10 +13,10 @@ const client = new MongoClient(
   const port = 3000;
 
   app.get('/', async (req, res) => {
-    res.send(`Hello World! ${(await coll.findOne()).title}`);
+    res.send(`Movie title : ${(await coll.findOne()).title}`);
   });
 
-  app.listen(port, () => {
+  app.listen(process.env.PORT || 3000, () => {
     console.log(`Started on port ${port}`);
   });
 })().catch(() => console.log('Error')));
