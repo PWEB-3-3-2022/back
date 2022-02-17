@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
-    "lint": "eslint app.js"
+    "lint": "eslint src/**/*.js"
   },
   "dependencies": {
-    "express": "^4.17.2",
+    "express": "^4.17.3",
     "mongodb": "^4.3.1"
   },
   "devDependencies": {
