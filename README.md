@@ -28,7 +28,11 @@ It is also recommended to setup your IDE to work with ESLint.
 
 ### Running
 
-Set `MONGODB_CONN` environment variable to your mongodb instance connection string. (e.g. `mongodb://localhost:27017/`)
+Set `MONGODB_CONN` environment variable to your mongodb instance connection string. (
+e.g. `mongodb://localhost:27017/tcflix-test`)
+
+Use a locally deployed mongodb instance or the one in mongodb atlas. If using the one on mongodb atlas please use the
+database `tcflix-test`.
 
 ```shell
 node app.js
@@ -38,7 +42,7 @@ node app.js
 
 1. (Optional) Create an issue
 2. Create a feature branch (e.g. feat/change)
-3. Run your code against the linter before pushing `pnpm run lint`
+3. Run the linter against your code before pushing (`npm run lint` & `npm run lint -- --fix`)
 4. Push your commits to this new branch
 5. Create a pull request
 6. Wait for merge
