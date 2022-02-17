@@ -19,7 +19,7 @@ itemsRouter.post('/', async (req, res, next) => {
 // GET /
 // Returns a list of items
 itemsRouter.get('/', async (req, res, next) => {
-  const count = req.query.count || 16;
+  const count = req.query.count ? parseInt(req.query.count, 10) : 16;
   res.json(await itemsColl.find({}).limit(count).toArray());
   next();
 });
@@ -27,7 +27,8 @@ itemsRouter.get('/', async (req, res, next) => {
 // GET /[id]
 // Return a specific item
 itemsRouter.get('/:id', async (req, res, next) => {
-  res.json(await itemsColl.findOne(idFilter(req.params.id)));
+  const result = await itemsColl.findOne(idFilter(req.params.id));
+  res.json(result);
   next();
 });
 
