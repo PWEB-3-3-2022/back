@@ -1,8 +1,11 @@
 import express from 'express';
+import morgan from 'morgan';
 import { initializeDBConn } from './lib/db/conn.js';
 import itemsRouter from './lib/items.js';
 
 const app = express();
+
+if (process.env.NODE_ENV !== 'production') app.use(morgan('combined'));
 
 app.get('/', async (req, res) => {
   res.send('Hello !');
