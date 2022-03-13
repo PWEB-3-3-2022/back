@@ -1,7 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import { initializeDBConn } from './lib/db/conn.js';
-import itemsRouter from './lib/items.js';
+import mediaRouter from './lib/medias.js';
 
 const app = express();
 
@@ -12,7 +12,7 @@ app.get('/', async (req, res) => {
 });
 
 // Register items endpoint
-app.use('/items', itemsRouter);
+app.use('/medias', mediaRouter);
 
 // Connect to database and start web server on success
 initializeDBConn().then(() => {
