@@ -2,19 +2,19 @@ import { MongoClient } from 'mongodb';
 
 // Defaults to a mongodb instance on localhost
 export const client = new MongoClient(
-  process.env.MONGODB_CONN || 'mongodb://localhost:27017/tcflix',
+  process.env.MONGODB_CONN || 'mongodb://127.0.0.1:27017/tcflix?readPreference=primary&appname=back&directConnection=true&ssl=false',
 );
 
 // Variables should not be used until initialization
 
 export let db;
 
-export let itemsColl;
+export let mediaColl;
 
 // Initialize DB connection
 export async function initializeDBConn() {
   await client.connect();
   // Database name is inferred from connection string
   db = client.db();
-  itemsColl = db.collection('items');
+  mediaColl = db.collection('media');
 }
