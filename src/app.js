@@ -9,7 +9,7 @@ import homeRouter from './lib/home.js';
 
 const openapi = swaggerJsdoc(
   {
-    failOnErrors: true,
+    failOnErrors: false,
     definition: {
       openapi: '3.0.0',
       info: {
@@ -17,7 +17,10 @@ const openapi = swaggerJsdoc(
         version: '0.1.0',
       },
     },
-    apis: ['./src/lib/home.js', './src/lib/medias.js'],
+    apis: [
+      './src/components.yml',
+      './src/lib/home.js',
+      './src/lib/medias.js'],
   },
 );
 
