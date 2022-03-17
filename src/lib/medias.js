@@ -22,10 +22,9 @@ export default mediaRouter;
  *     produces:
  *       - application/json
  */
-mediaRouter.post('/', async (req, res, next) => {
+mediaRouter.post('/', async (req, res) => {
   const result = await mediaColl.insertOne(req.body);
   res.send(`${result.insertedId}`);
-  next('router');
 });
 
 /**
@@ -60,7 +59,6 @@ mediaRouter.get('/search', async (req, res, next) => {
     { projection: textScoreProj, sort: textScoreSort, limit },
   ).toArray();
   res.json(result);
-  next('router');
 });
 
 /**
@@ -79,14 +77,12 @@ mediaRouter.get('/search', async (req, res, next) => {
  *         in: query
  *         type: integer
  */
-mediaRouter.get('/', async (req, res, next) => {
+mediaRouter.get('/', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 16;
   const type = req.query.type || 'movie';
 
   const result = await mediaColl.find({ type }, { limit: count }).toArray();
-  // console.log(result);
   res.json(result);
-  next('router');
 });
 
 /**
@@ -103,10 +99,9 @@ mediaRouter.get('/', async (req, res, next) => {
  *         type: string
  *         required: true
  */
-mediaRouter.get('/:id', async (req, res, next) => {
+mediaRouter.get('/:id', async (req, res) => {
   const result = await mediaColl.findOne(idFilter(req.params.id));
   res.json(result);
-  next('router');
 });
 
 /**
@@ -128,9 +123,9 @@ mediaRouter.put('/:id', async (req, res, next) => {
   if (result.modifiedCount === 1) {
     res.send('OK');
   } else {
-    res.send('Error');
+    res.status(400);
+    next(new Error(`Media with id '${req.params.id}' doesn't exist`));
   }
-  next('router');
 });
 
 /**
@@ -152,7 +147,7 @@ mediaRouter.delete('/:id', async (req, res, next) => {
   if (result.deletedCount === 1) {
     res.send('OK');
   } else {
-    res.send('Error');
+    res.status(400);
+    next(new Error(`Media with id '${req.params.id}' doesn't exist`));
   }
-  next('router');
 });
