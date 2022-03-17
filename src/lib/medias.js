@@ -13,16 +13,38 @@ mediaRouter.use(express.json());
 
 export default mediaRouter;
 
-// POST /
-// Create a new media
+/**
+ * @openapi
+ *
+ * /medias:
+ *   post:
+ *     summary: "Create a new media"
+ *     produces:
+ *       - application/json
+ */
 mediaRouter.post('/', async (req, res, next) => {
   const result = await mediaColl.insertOne(req.body);
   res.send(`${result.insertedId}`);
   next('router');
 });
 
-// GET /search
-// Search for a media
+/**
+ * @openapi
+ *
+ * /medias/search:
+ *   get:
+ *     summary: "Search for medias"
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: query
+ *         in: query
+ *         type: string
+ *         required: true
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ */
 mediaRouter.get('/search', async (req, res, next) => {
   const { query } = req.query;
 
@@ -41,8 +63,22 @@ mediaRouter.get('/search', async (req, res, next) => {
   next('router');
 });
 
-// GET /
-// Returns a list of medias
+/**
+ * @openapi
+ *
+ * /medias:
+ *   get:
+ *     summary: "Retrieve medias"
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: type
+ *         in: query
+ *         type: string
+ *       - name: count
+ *         in: query
+ *         type: integer
+ */
 mediaRouter.get('/', async (req, res, next) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 16;
   const type = req.query.type || 'movie';
@@ -53,16 +89,40 @@ mediaRouter.get('/', async (req, res, next) => {
   next('router');
 });
 
-// GET /[id]
-// Return a specific media
+/**
+ * @openapi
+ *
+ * /medias/{id}:
+ *   get:
+ *     summary: "Retrieve a media"
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         type: string
+ *         required: true
+ */
 mediaRouter.get('/:id', async (req, res, next) => {
   const result = await mediaColl.findOne(idFilter(req.params.id));
   res.json(result);
   next('router');
 });
 
-// PUT /[id]
-// Update a media
+/**
+ * @openapi
+ *
+ * /medias/{id}:
+ *   put:
+ *     summary: "Update a media"
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         type: string
+ *         required: true
+ */
 mediaRouter.put('/:id', async (req, res, next) => {
   const result = await mediaColl.updateOne(idFilter(req.params.id), req.body);
   if (result.modifiedCount === 1) {
@@ -73,8 +133,20 @@ mediaRouter.put('/:id', async (req, res, next) => {
   next('router');
 });
 
-// DELETE /[id]
-// Delete a media
+/**
+ * @openapi
+ *
+ * /medias/{id}:
+ *   delete:
+ *     summary: "Delete a media"
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         type: string
+ *         required: true
+ */
 mediaRouter.delete('/:id', async (req, res, next) => {
   const result = await mediaColl.deleteOne(idFilter(req.params.id));
   if (result.deletedCount === 1) {

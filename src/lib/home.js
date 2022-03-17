@@ -7,8 +7,19 @@ homeRouter.use(express.json());
 
 export default homeRouter;
 
-// GET /movies
-// Return random movies
+/**
+ * @openapi
+ *
+ * /home/movies:
+ *   get:
+ *     summary: "Retrieve `count` movies"
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: count
+ *         in: query
+ *         type: integer
+ */
 homeRouter.get('/movies', async (req, res, next) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 4;
   const result = await mediaColl.aggregate([
@@ -19,8 +30,19 @@ homeRouter.get('/movies', async (req, res, next) => {
   next('router');
 });
 
-// GET /tvshows
-// Return random tv shows
+/**
+ * @openapi
+ *
+ * /home/tvshows:
+ *   get:
+ *     summary: "Retrieve `count` tv shows"
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: count
+ *         in: query
+ *         type: integer
+ */
 homeRouter.get('/tvshows', async (req, res, next) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 4;
   const result = await mediaColl.aggregate([

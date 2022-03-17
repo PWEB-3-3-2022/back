@@ -1,9 +1,26 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import swaggerJsdoc from 'swagger-jsdoc';
 import { initializeDBConn } from './lib/db/conn.js';
 import mediaRouter from './lib/medias.js';
 import homeRouter from './lib/home.js';
+
+const openapi = swaggerJsdoc(
+  {
+    failOnErrors: true,
+    definition: {
+      openapi: '3.0',
+      info: {
+        title: 'Hello world',
+        version: '1.0.0',
+      },
+    },
+    apis: ['./src/lib/home.js', './src/lib/medias.js'],
+  },
+);
+
+openapi.then(console.log);
 
 const app = express();
 
