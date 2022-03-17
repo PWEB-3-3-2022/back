@@ -10,6 +10,7 @@ specifiers:
   morgan: ^1.10.0
   openapi-types: ^10.0.0
   swagger-jsdoc: ^7.0.0-rc.6
+  swagger-ui-express: ^4.3.0
 
 dependencies:
   cors: 2.8.5
@@ -18,6 +19,7 @@ dependencies:
   morgan: 1.10.0
   openapi-types: 10.0.0
   swagger-jsdoc: 7.0.0-rc.6_openapi-types@10.0.0
+  swagger-ui-express: 4.3.0_express@4.17.3
 
 devDependencies:
   eslint: 8.11.0
@@ -1461,6 +1463,20 @@ packages:
       '@apidevtools/swagger-parser': 10.0.2_openapi-types@10.0.0
     transitivePeerDependencies:
       - openapi-types
+    dev: false
+
+  /swagger-ui-dist/4.6.2:
+    resolution: {integrity: sha512-BSt+ukOGkGZ2uHV4jyyCAzt60ysyQpGZAAhtIh7AMHT4MH1xXGkoXm2tfr1oRqO1N4IEY6qqNAlmcfMo/dAYuw==}
+    dev: false
+
+  /swagger-ui-express/4.3.0_express@4.17.3:
+    resolution: {integrity: sha512-jN46SEEe9EoXa3ZgZoKgnSF6z0w3tnM1yqhO4Y+Q4iZVc8JOQB960EZpIAz6rNROrDApVDwcMHR0mhlnc/5Omw==}
+    engines: {node: '>= v0.10.32'}
+    peerDependencies:
+      express: '>=4.0.0'
+    dependencies:
+      express: 4.17.3
+      swagger-ui-dist: 4.6.2
     dev: false
 
   /text-table/0.2.0:
