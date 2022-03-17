@@ -1,0 +1,22 @@
+components:
+  schemas:
+    Media:
+      type: object
+      discriminator:
+        propertyName: type
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+      required:
+        - type
+        - title
+    Movie:
+      description: A movie
+      allOf:
+        - $ref: '#/components/schemas/Media'
+        - type: object
+          properties:
+            year:
+              type: integer

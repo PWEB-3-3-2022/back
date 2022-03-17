@@ -1,4 +1,5 @@
 import express from 'express';
+import { ObjectId } from 'mongodb';
 import { mediaColl } from './db/conn.js';
 import {
   idFilter,
@@ -33,16 +34,23 @@ mediaRouter.post('/', async (req, res) => {
  * /medias/search:
  *   get:
  *     summary: "Search for medias"
- *     produces:
- *       - application/json
+ *     operationId: medias.search
  *     parameters:
  *       - name: query
  *         in: query
- *         type: string
+ *         description: "Search query"
  *         required: true
- *       - name: limit
- *         in: query
- *         type: integer
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: "Search results"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
  */
 mediaRouter.get('/search', async (req, res, next) => {
   const { query } = req.query;
@@ -67,8 +75,6 @@ mediaRouter.get('/search', async (req, res, next) => {
  * /medias:
  *   get:
  *     summary: "Retrieve medias"
- *     produces:
- *       - application/json
  *     parameters:
  *       - name: type
  *         in: query
@@ -76,6 +82,15 @@ mediaRouter.get('/search', async (req, res, next) => {
  *       - name: count
  *         in: query
  *         type: integer
+ *     responses:
+ *       "200":
+ *         description: "Media list"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
  */
 mediaRouter.get('/', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 16;
@@ -91,17 +106,38 @@ mediaRouter.get('/', async (req, res) => {
  * /medias/{id}:
  *   get:
  *     summary: "Retrieve a media"
- *     produces:
- *       - application/json
+ *     operationId: medias.getOne
  *     parameters:
  *       - name: id
  *         in: path
- *         type: string
+ *         description: "Media id"
  *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: "Media"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       "400":
+ *         description: "Invalid id"
+ *       default:
+ *         description: "Server error"
  */
-mediaRouter.get('/:id', async (req, res) => {
-  const result = await mediaColl.findOne(idFilter(req.params.id));
-  res.json(result);
+mediaRouter.get('/:id', async (req, res, next) => {
+  if (!ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    next(new Error('Invalid id'));
+    return;
+  }
+  try {
+    const result = await mediaColl.findOne(idFilter(req.params.id));
+    res.json(result);
+  } catch (e) {
+    next(e);
+  }
 });
 
 /**
@@ -110,15 +146,29 @@ mediaRouter.get('/:id', async (req, res) => {
  * /medias/{id}:
  *   put:
  *     summary: "Update a media"
- *     produces:
- *       - application/json
+ *     operationId: medias.update
  *     parameters:
  *       - name: id
  *         in: path
- *         type: string
+ *         description: "Media id"
  *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: "Media updated"
+ *       "400":
+ *         description: "Invalid id"
+ *       default:
+ *         description: "Server error"
  */
 mediaRouter.put('/:id', async (req, res, next) => {
+  if (!ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    next(new Error('Invalid id'));
+    return;
+  }
+
   const result = await mediaColl.updateOne(idFilter(req.params.id), req.body);
   if (result.modifiedCount === 1) {
     res.send('OK');
@@ -134,15 +184,28 @@ mediaRouter.put('/:id', async (req, res, next) => {
  * /medias/{id}:
  *   delete:
  *     summary: "Delete a media"
- *     produces:
- *       - application/json
  *     parameters:
  *       - name: id
+ *         description: "Media id"
  *         in: path
- *         type: string
  *         required: true
+ *         schema:
+ *           type: string
+ *     response:
+ *       "200":
+ *         description: "Media deleted"
+ *       "400":
+ *         description: "Invalid id"
+ *       default:
+ *         description: "Server error"
  */
 mediaRouter.delete('/:id', async (req, res, next) => {
+  if (!ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    next(new Error('Invalid id'));
+    return;
+  }
+
   const result = await mediaColl.deleteOne(idFilter(req.params.id));
   if (result.deletedCount === 1) {
     res.send('OK');
