@@ -2,6 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   cors: ^2.8.5
+  crypto-js: ^4.1.1
   eslint: ^8.11.0
   eslint-config-airbnb-base: ^15.0.0
   eslint-plugin-import: ^2.25.4
@@ -14,6 +15,7 @@ specifiers:
 
 dependencies:
   cors: 2.8.5
+  crypto-js: 4.1.1
   express: 4.17.3
   mongodb: 4.4.1
   morgan: 1.10.0
@@ -329,6 +331,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /crypto-js/4.1.1:
+    resolution: {integrity: sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==}
+    dev: false
 
   /debug/2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}

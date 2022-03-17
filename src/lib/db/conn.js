@@ -10,6 +10,7 @@ export const client = new MongoClient(
 export let db;
 
 export let mediaColl;
+export let userColl;
 
 // Initialize DB connection
 export async function initializeDBConn() {
@@ -17,4 +18,5 @@ export async function initializeDBConn() {
   // Database name is inferred from connection string
   db = client.db();
   mediaColl = db.collection('media');
+  userColl = db.collection('users');
 }
