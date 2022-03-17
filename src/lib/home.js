@@ -20,14 +20,13 @@ export default homeRouter;
  *         in: query
  *         type: integer
  */
-homeRouter.get('/movies', async (req, res, next) => {
+homeRouter.get('/movies', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 4;
   const result = await mediaColl.aggregate([
     { $match: { type: 'movie' } },
     { $sample: { size: count } },
   ]).toArray();
   res.json(result);
-  next('router');
 });
 
 /**
@@ -43,12 +42,11 @@ homeRouter.get('/movies', async (req, res, next) => {
  *         in: query
  *         type: integer
  */
-homeRouter.get('/tvshows', async (req, res, next) => {
+homeRouter.get('/tvshows', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 4;
   const result = await mediaColl.aggregate([
     { $match: { type: 'tvshow' } },
     { $sample: { size: count } },
   ]).toArray();
   res.json(result);
-  next('router');
 });
