@@ -1,22 +1,103 @@
 components:
   schemas:
-    Media:
+    id:
+      type: string
+      default: '622e0627a1e1709a3000d345'
+    type:
+      type: string
+      enum:
+        - 'movie'
+        - 'tvshow'
+    year:
+      type: integer
+      default: 1970
+    url:
+      type: string
+      format: url
+      default: 'https://example.com/file'
+    media:
       type: object
-      discriminator:
-        propertyName: type
       properties:
+        id:
+          $ref: '#/components/schemas/id'
         type:
-          type: string
+          $ref: '#/components/schemas/type'
         title:
           type: string
+        year:
+          $ref: '#/components/schemas/year'
+      discriminator:
+        propertyName: type
       required:
+        - id
         - type
         - title
-    Movie:
+        - year
+    movie:
       description: A movie
       allOf:
-        - $ref: '#/components/schemas/Media'
+        - $ref: '#/components/schemas/media'
         - type: object
           properties:
-            year:
-              type: integer
+            genres:
+              type: array
+              items:
+                type: string
+            director:
+              type: string
+            actors:
+              type: array
+              items:
+                type: string
+            poster:
+              $ref: '#/components/schemas/url'
+            description:
+              type: string
+    tvshow:
+      description: A tv show
+      allOf:
+        - $ref: '#/components/schemas/media'
+        - type: object
+          properties:
+            seasons:
+              type: array
+              items:
+                type: object
+                properties:
+                  year:
+                    $ref: '#/components/schemas/year'
+                  episodes:
+                    type: array
+                    items:
+                      type: string
+  responses:
+    default:
+      description: 'Unexpected server error'
+  parameters:
+    pathObjectId:
+      name: id
+      in: path
+      required: true
+      description: 'Id of an object'
+      schema:
+        $ref: '#/components/schemas/id'
+    count:
+      name: count
+      in: query
+      description: 'The maximum number of objects to return'
+      schema:
+        type: integer
+        minimum: 1
+    mediaType:
+      name: type
+      in: query
+      description: 'The type of media to return'
+      schema:
+        $ref: '#/components/schemas/type'
+  requestBodies:
+    media:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/media'
+      required: true

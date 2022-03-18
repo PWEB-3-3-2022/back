@@ -15,11 +15,7 @@ export default homeRouter;
  *     summary: "Retrieve a random movie list"
  *     operationId: home.movies.random
  *     parameters:
- *       - name: count
- *         in: query
- *         description: "The maximum number of movies to return"
- *         schema:
- *           type: integer
+ *       - $ref: "#/components/parameters/count"
  *     responses:
  *       "200":
  *         description: "Random movie list"
@@ -28,7 +24,9 @@ export default homeRouter;
  *             schema:
  *               type: array
  *               items:
- *                 $ref: "#/components/schemas/Media"
+ *                 $ref: "#/components/schemas/movie"
+ *       default:
+ *         $ref: "#/components/responses/default"
  */
 homeRouter.get('/movies', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 4;
@@ -47,11 +45,7 @@ homeRouter.get('/movies', async (req, res) => {
  *     summary: "Retrieve a random tv show list"
  *     operationId: home.tvshows.random
  *     parameters:
- *       - name: count
- *         in: query
- *         description: "The maximum number of tv shows to return"
- *         schema:
- *           type: integer
+ *       - $ref: "#/components/parameters/count"
  *     responses:
  *       "200":
  *         description: "Random tv show list"
@@ -60,7 +54,9 @@ homeRouter.get('/movies', async (req, res) => {
  *             schema:
  *               type: array
  *               items:
- *                 type: object
+ *                 $ref: "#/components/schemas/tvshow"
+ *       default:
+ *         $ref: "#/components/responses/default"
  */
 homeRouter.get('/tvshows', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 4;
