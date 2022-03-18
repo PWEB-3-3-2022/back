@@ -20,8 +20,18 @@ export default mediaRouter;
  * /medias:
  *   post:
  *     summary: "Create a new media"
- *     produces:
- *       - application/json
+ *     operationId: medias.post
+ *     requestBody:
+ *       $ref: "#/components/requestBodies/media"
+ *     responses:
+ *       "200":
+ *         description: "On success, return the inserted media id"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/id'
+ *       default:
+ *         $ref: "#/components/responses/default"
  */
 mediaRouter.post('/', async (req, res) => {
   const result = await mediaColl.insertOne(req.body);
@@ -42,6 +52,7 @@ mediaRouter.post('/', async (req, res) => {
  *         required: true
  *         schema:
  *           type: string
+ *       - $ref: "#/components/parameters/count"
  *     responses:
  *       "200":
  *         description: "Search results"
@@ -50,7 +61,9 @@ mediaRouter.post('/', async (req, res) => {
  *             schema:
  *               type: array
  *               items:
- *                 type: object
+ *                 $ref: "#/components/schemas/media"
+ *       default:
+ *         $ref: "#/components/responses/default"
  */
 mediaRouter.get('/search', async (req, res, next) => {
   const { query } = req.query;
@@ -61,7 +74,7 @@ mediaRouter.get('/search', async (req, res, next) => {
     return;
   }
 
-  const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+  const limit = req.query.count ? parseInt(req.query.count, 10) : 10;
   const result = await mediaColl.find(
     textSearch(query, 'fr'),
     { projection: textScoreProj, sort: textScoreSort, limit },
@@ -75,13 +88,10 @@ mediaRouter.get('/search', async (req, res, next) => {
  * /medias:
  *   get:
  *     summary: "Retrieve medias"
+ *     operationId: medias.getMany
  *     parameters:
- *       - name: type
- *         in: query
- *         type: string
- *       - name: count
- *         in: query
- *         type: integer
+ *       - $ref: "#/components/parameters/mediaType"
+ *       - $ref: "#/components/parameters/count"
  *     responses:
  *       "200":
  *         description: "Media list"
@@ -90,7 +100,9 @@ mediaRouter.get('/search', async (req, res, next) => {
  *             schema:
  *               type: array
  *               items:
- *                 type: object
+ *                 $ref: "#/components/schemas/media"
+ *       default:
+ *         $ref: "#/components/responses/default"
  */
 mediaRouter.get('/', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 16;
@@ -108,23 +120,18 @@ mediaRouter.get('/', async (req, res) => {
  *     summary: "Retrieve a media"
  *     operationId: medias.getOne
  *     parameters:
- *       - name: id
- *         in: path
- *         description: "Media id"
- *         required: true
- *         schema:
- *           type: string
+ *       - $ref: "#/components/parameters/pathObjectId"
  *     responses:
  *       "200":
  *         description: "Media"
  *         content:
  *           application/json:
  *             schema:
- *               type: object
+ *               $ref: "#/components/schemas/media"
  *       "400":
  *         description: "Invalid id"
  *       default:
- *         description: "Server error"
+ *         $ref: "#/components/responses/default"
  */
 mediaRouter.get('/:id', async (req, res, next) => {
   if (!ObjectId.isValid(req.params.id)) {
@@ -148,19 +155,14 @@ mediaRouter.get('/:id', async (req, res, next) => {
  *     summary: "Update a media"
  *     operationId: medias.update
  *     parameters:
- *       - name: id
- *         in: path
- *         description: "Media id"
- *         required: true
- *         schema:
- *           type: string
+ *       - $ref: "#/components/parameters/pathObjectId"
  *     responses:
  *       "200":
  *         description: "Media updated"
  *       "400":
  *         description: "Invalid id"
  *       default:
- *         description: "Server error"
+ *         $ref: "#/components/responses/default"
  */
 mediaRouter.put('/:id', async (req, res, next) => {
   if (!ObjectId.isValid(req.params.id)) {
@@ -184,20 +186,16 @@ mediaRouter.put('/:id', async (req, res, next) => {
  * /medias/{id}:
  *   delete:
  *     summary: "Delete a media"
+ *     operationId: medias.delete
  *     parameters:
- *       - name: id
- *         description: "Media id"
- *         in: path
- *         required: true
- *         schema:
- *           type: string
+ *       - $ref: "#/components/parameters/pathObjectId"
  *     response:
  *       "200":
  *         description: "Media deleted"
  *       "400":
  *         description: "Invalid id"
  *       default:
- *         description: "Server error"
+ *         $ref: "#/components/responses/default"
  */
 mediaRouter.delete('/:id', async (req, res, next) => {
   if (!ObjectId.isValid(req.params.id)) {
