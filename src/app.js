@@ -6,7 +6,7 @@ import swaggerUi from 'swagger-ui-express';
 import { initializeDBConn } from './lib/db/conn.js';
 import mediaRouter from './lib/medias.js';
 import homeRouter from './lib/home.js';
-import loginRouter from './lib/login.js';
+import authRouter from './lib/auth.js';
 
 const openapi = swaggerJsdoc(
   {
@@ -20,6 +20,7 @@ const openapi = swaggerJsdoc(
     },
     apis: [
       './src/components.yml',
+      './src/lib/auth.js',
       './src/lib/home.js',
       './src/lib/medias.js'],
   },
@@ -47,7 +48,8 @@ app.use('/home', homeRouter);
 // Register medias endpoints
 app.use('/medias', mediaRouter);
 
-app.use('/login', loginRouter);
+// Register auth endpoints
+app.use('/auth', authRouter);
 
 // Connect to database and start web server on success
 initializeDBConn().then(() => {
