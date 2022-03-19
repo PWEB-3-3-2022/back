@@ -38,23 +38,22 @@ export default authRouter;
  *       default:
  *         $ref: "#/components/responses/default"
  */
-authRouter.post('/', async (req, res) => {
+authRouter.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  argon2.hash(password).then(async (hashedPWD) => {
-    console.log(`User name = ${email}, pswd is ${hashedPWD}`);
-    const result = await userColl.findOne({ email });
-    if (result == null) {
-      res.send({ check: 'NOPE' });
-      return;
-    }
-    if (await argon2.verify(result.password, password)) {
-      console.log(`Found: ${email}, pass=${hashedPWD}`);
-      res.send({ check: 'noice' });
-    } else {
-      console.log(`Not found: ${email}`);
-      res.send({ check: 'NOPE' });
-    }
-  });
+  const hashedPWD = await argon2.hash(password);
+  console.log(`User name = ${email}, pswd is ${hashedPWD}`);
+  const result = await userColl.findOne({ email });
+  if (result == null) {
+    res.send({ check: 'NOPE' });
+    return;
+  }
+  if (await argon2.verify(result.password, password)) {
+    console.log(`Found: ${email}, pass=${hashedPWD}`);
+    res.send({ check: 'noice' });
+  } else {
+    console.log(`Not found: ${email}`);
+    res.send({ check: 'NOPE' });
+  }
 });
 
 authRouter.options('/', (req, res) => {
