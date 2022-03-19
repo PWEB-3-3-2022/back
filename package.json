@@ -8,8 +8,8 @@
     "lint": "eslint src/**/*.js"
   },
   "dependencies": {
+    "argon2": "^0.28.5",
     "cors": "^2.8.5",
-    "crypto-js": "^4.1.1",
     "express": "^4.17.3",
     "mongodb": "^4.4.1",
     "morgan": "^1.10.0",
