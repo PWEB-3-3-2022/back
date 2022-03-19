@@ -1,5 +1,5 @@
 import express from 'express';
-import CryptoJS from 'crypto-js';
+import argon2 from 'argon2';
 import { userColl } from './db/conn.js';
 
 const authRouter = express.Router();
@@ -38,14 +38,17 @@ export default authRouter;
  *       default:
  *         $ref: "#/components/responses/default"
  */
-authRouter.post('/login', async (req, res) => {
+authRouter.post('/', async (req, res) => {
   const { email, password } = req.body;
-  const sha3PWD = CryptoJS.SHA3(password);
-  console.log(`User name = ${email}, pswd is ${sha3PWD}`);
-  userColl.findOne({ email, password: `${sha3PWD}` }, (err, result) => {
-    if (err) throw err;
-    if (result) {
-      console.log(`Found: ${email}, pass=${sha3PWD}`);
+  argon2.hash(password).then(async (hashedPWD) => {
+    console.log(`User name = ${email}, pswd is ${hashedPWD}`);
+    const result = await userColl.findOne({ email });
+    if (result == null) {
+      res.send({ check: 'NOPE' });
+      return;
+    }
+    if (await argon2.verify(result.password, password)) {
+      console.log(`Found: ${email}, pass=${hashedPWD}`);
       res.send({ check: 'noice' });
     } else {
       console.log(`Not found: ${email}`);
@@ -54,6 +57,6 @@ authRouter.post('/login', async (req, res) => {
   });
 });
 
-authRouter.options('/login', (req, res) => {
+authRouter.options('/', (req, res) => {
   res.sendStatus(200);
 });
