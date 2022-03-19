@@ -14,7 +14,7 @@ export default authRouter;
  * /auth/login:
  *   post:
  *     summary: "Login to use the API"
- *     operationId: login.login
+ *     operationId: auth.login
  *     requestBody:
  *       content:
  *         application/json:
@@ -53,6 +53,51 @@ authRouter.post('/login', async (req, res) => {
   } else {
     console.log(`Not found: ${email}`);
     res.send({ check: 'NOPE' });
+  }
+});
+
+/**
+ * @openapi
+ *
+ * /auth/register:
+ *   post:
+ *     summary: "Register a new account"
+ *     operationId: auth.register
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *             required:
+ *               - email
+ *               - password
+ *     responses:
+ *       "200":
+ *         description: "On success, return an auth token"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *       default:
+ *         $ref: "#/components/responses/default"
+ */
+authRouter.post('/register', async (req, res, next) => {
+  const { name, email, password } = req.body;
+  const digest = await argon2.hash(password);
+  const result = await userColl.insertOne({ name, email, password: digest });
+  if (result.insertedId) {
+    res.send('OK');
+  } else {
+    res.status(500);
+    next(new Error('Cannot insert new user'));
   }
 });
 
