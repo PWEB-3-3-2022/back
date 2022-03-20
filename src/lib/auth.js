@@ -8,6 +8,12 @@ authRouter.use(express.json());
 
 export default authRouter;
 
+const validateEmail = (email) => String(email)
+  .toLowerCase()
+  .match(
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+  );
+
 /**
  * @openapi
  *
@@ -92,9 +98,18 @@ authRouter.post('/login', async (req, res) => {
 authRouter.post('/register', async (req, res, next) => {
   const { name, email, password } = req.body;
   const digest = await argon2.hash(password);
+  if (!validateEmail(email)) {
+    res.send({ check: 'incorrect_email' });
+    return;
+  }
+  const search = await userColl.findOne({ email });
+  if (search != null) {
+    res.send({ check: 'already_exists' });
+    return;
+  }
   const result = await userColl.insertOne({ name, email, password: digest });
   if (result.insertedId) {
-    res.send('OK');
+    res.send({ check: 'OK' });
   } else {
     res.status(500);
     next(new Error('Cannot insert new user'));
