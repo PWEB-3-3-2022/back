@@ -4,7 +4,7 @@ import CryptoJS from 'crypto-js';
 import { userColl } from './db/conn.js';
 
 const authRouter = express.Router();
-const tokenPass = 'bQeThWmZ';
+const tokenPass = `${process.env.TOKEN_KEY}`;
 
 authRouter.use(express.json());
 
