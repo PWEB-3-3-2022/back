@@ -1,8 +1,10 @@
 import express from 'express';
 import argon2 from 'argon2';
+import CryptoJS from 'crypto-js';
 import { userColl } from './db/conn.js';
 
 const authRouter = express.Router();
+const tokenPass = 'bQeThWmZ';
 
 authRouter.use(express.json());
 
@@ -44,21 +46,35 @@ const validateEmail = (email) => String(email)
  *       default:
  *         $ref: "#/components/responses/default"
  */
-authRouter.post('/login', async (req, res) => {
+authRouter.post('/login', async (req, res, next) => {
   const { email, password } = req.body;
   const hashedPWD = await argon2.hash(password);
   console.log(`User name = ${email}, pswd is ${hashedPWD}`);
   const result = await userColl.findOne({ email });
   if (result == null) {
-    res.send({ check: 'NOPE' });
+    res.send({ error: 'NoAccountError' });
     return;
   }
   if (await argon2.verify(result.password, password)) {
     console.log(`Found: ${email}, pass=${hashedPWD}`);
-    res.send({ check: 'noice' });
+    const expirationDate = new Date().setDate(new Date().getDate() + 7);
+    // eslint-disable-next-line no-underscore-dangle
+    const authToken = CryptoJS.AES.encrypt(`${result._id}|${result.email}|${expirationDate}`, tokenPass);
+    const updateDocument = {
+      $set: {
+        authToken: `${authToken}`,
+      },
+    };
+    // eslint-disable-next-line no-underscore-dangle
+    if (await userColl.updateOne({ _id: result._id }, updateDocument)) {
+      res.send({ authToken: `${authToken}`, expires: `${new Date(expirationDate).toUTCString()}` });
+    } else {
+      res.status(500);
+      next(new Error('Cannot insert new user'));
+    }
   } else {
     console.log(`Not found: ${email}`);
-    res.send({ check: 'NOPE' });
+    res.send({ error: 'NoAccountError' });
   }
 });
 
@@ -99,17 +115,17 @@ authRouter.post('/register', async (req, res, next) => {
   const { name, email, password } = req.body;
   const digest = await argon2.hash(password);
   if (!validateEmail(email)) {
-    res.send({ check: 'incorrect_email' });
+    res.send({ error: 'IncorrectEmailError' });
     return;
   }
   const search = await userColl.findOne({ email });
   if (search != null) {
-    res.send({ check: 'already_exists' });
+    res.send({ error: 'AccountAlreadyExistsError' });
     return;
   }
   const result = await userColl.insertOne({ name, email, password: digest });
   if (result.insertedId) {
-    res.send({ check: 'OK' });
+    res.send({ response: 'OK' });
   } else {
     res.status(500);
     next(new Error('Cannot insert new user'));
