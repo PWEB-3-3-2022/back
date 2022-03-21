@@ -46,7 +46,7 @@ const validateEmail = (email) => String(email)
  *       default:
  *         $ref: "#/components/responses/default"
  */
-authRouter.post('/login', async (req, res, next) => {
+authRouter.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const hashedPWD = await argon2.hash(password);
   console.log(`User name = ${email}, pswd is ${hashedPWD}`);
@@ -59,19 +59,8 @@ authRouter.post('/login', async (req, res, next) => {
     console.log(`Found: ${email}, pass=${hashedPWD}`);
     const expirationDate = new Date().setDate(new Date().getDate() + 7);
     // eslint-disable-next-line no-underscore-dangle
-    const authToken = CryptoJS.AES.encrypt(`${result._id}|${result.email}|${expirationDate}`, tokenPass);
-    const updateDocument = {
-      $set: {
-        authToken: `${authToken}`,
-      },
-    };
-    // eslint-disable-next-line no-underscore-dangle
-    if (await userColl.updateOne({ _id: result._id }, updateDocument)) {
-      res.send({ authToken: `${authToken}`, expires: `${new Date(expirationDate).toUTCString()}` });
-    } else {
-      res.status(500);
-      next(new Error('Cannot insert new user'));
-    }
+    const authToken = CryptoJS.AES.encrypt(`${result._id}|${result.role}|${expirationDate}`, tokenPass);
+    res.send({ authToken: `${authToken}`, expires: `${new Date(expirationDate).toUTCString()}` });
   } else {
     console.log(`Not found: ${email}`);
     res.send({ error: 'NoAccountError' });
@@ -123,7 +112,8 @@ authRouter.post('/register', async (req, res, next) => {
     res.send({ error: 'AccountAlreadyExistsError' });
     return;
   }
-  const result = await userColl.insertOne({ name, email, password: digest });
+  // eslint-disable-next-line object-curly-newline
+  const result = await userColl.insertOne({ name, email, password: digest, role: 'user' });
   if (result.insertedId) {
     res.send({ response: 'OK' });
   } else {
