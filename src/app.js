@@ -7,6 +7,7 @@ import { initializeDBConn } from './lib/db/conn.js';
 import mediaRouter from './lib/medias.js';
 import homeRouter from './lib/home.js';
 import authRouter from './lib/auth.js';
+import userRouter from './lib/user.js';
 
 const openapi = swaggerJsdoc(
   {
@@ -22,7 +23,8 @@ const openapi = swaggerJsdoc(
       './src/components.yml',
       './src/lib/auth.js',
       './src/lib/home.js',
-      './src/lib/medias.js'],
+      './src/lib/medias.js',
+      './src/lib/user.js'],
   },
 );
 
@@ -50,6 +52,9 @@ app.use('/medias', mediaRouter);
 
 // Register auth endpoints
 app.use('/auth', authRouter);
+
+// Register user endpoints
+app.use('/user', userRouter);
 
 // Connect to database and start web server on success
 initializeDBConn().then(() => {
