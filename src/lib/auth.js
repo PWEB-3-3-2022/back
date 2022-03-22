@@ -16,6 +16,31 @@ const validateEmail = (email) => String(email)
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
   );
 
+export function checkAuthToken(authToken) {
+  let result = {};
+  const split = authToken.split('|');
+  if (split.length !== 3) {
+    result.error = 'InvalidTokenError';
+    return result;
+  }
+
+  const valid = (new Date(parseInt(split[2], 10))).getTime() > 0;
+
+  if (!valid) {
+    result.error = 'InvalidTokenError';
+    return result;
+  }
+
+  if (Date.now() > result.expires) {
+    result.error = 'ExpiredTokenError';
+    return result;
+  }
+
+  result = { id: split[0], role: split[1], expires: split[2] };
+
+  return result;
+}
+
 /**
  * @openapi
  *
