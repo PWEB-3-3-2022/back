@@ -41,8 +41,7 @@ const userCache = [];
  */
 userRouter.post('/infos', async (req, res) => {
   const { authToken } = req.body;
-  const decryptedToken = CryptoJS.AES.decrypt(`${authToken}`, tokenPass).toString(CryptoJS.enc.Utf8);
-  const token = checkAuthToken(`${decryptedToken}`);
+  const token = checkAuthToken(`${authToken}`);
   if (Object.prototype.hasOwnProperty.call(token, 'error')) {
     res.send({ error: token.error });
     return;

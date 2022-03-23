@@ -18,7 +18,14 @@ const validateEmail = (email) => String(email)
 
 export function checkAuthToken(authToken) {
   let result = {};
-  const split = authToken.split('|');
+  let decryptedToken = '';
+  try {
+    decryptedToken = CryptoJS.AES.decrypt(`${authToken}`, tokenPass).toString(CryptoJS.enc.Utf8);
+  } catch (error) {
+    result.error = 'InvalidTokenError';
+    return result;
+  }
+  const split = decryptedToken.split('|');
   if (split.length !== 3) {
     result.error = 'InvalidTokenError';
     return result;
