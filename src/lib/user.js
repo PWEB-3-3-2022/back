@@ -50,7 +50,7 @@ userRouter.post('/infos', async (req, res) => {
   if (token.id in userCache) {
     const user = userCache[token.id];
     res.send({
-      name: user.name, email: user.email, role: user.role,
+      name: user.name, email: user.email, role: user.role, created: user.created,
     });
   } else {
     const result = await userColl.findOne({ _id: toObjectId(token.id) });
@@ -59,11 +59,10 @@ userRouter.post('/infos', async (req, res) => {
       return;
     }
     userCache[token.id] = {
-      name: result.name, email: result.email, role: result.role,
+      name: result.name, email: result.email, role: result.role, created: result.created,
     };
     res.send(JSON.stringify(userCache[token.id]));
   }
-  // Check le tableau des users, s'il n'y est pas dedans, on query la DB
 });
 
 userRouter.options('/', (req, res) => {

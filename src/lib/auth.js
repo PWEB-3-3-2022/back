@@ -139,7 +139,7 @@ authRouter.post('/register', async (req, res, next) => {
     return;
   }
   // eslint-disable-next-line object-curly-newline
-  const result = await userColl.insertOne({ name, email, password: digest, role: 'user' });
+  const result = await userColl.insertOne({ name, email, password: digest, role: 'user', created: Date.now() });
   if (result.insertedId) {
     res.send({ response: 'OK' });
   } else {
