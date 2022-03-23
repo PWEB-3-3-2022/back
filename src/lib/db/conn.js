@@ -1,4 +1,4 @@
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient } from 'mongodb';
 
 // Defaults to a mongodb instance on localhost
 export const client = new MongoClient(
@@ -19,8 +19,4 @@ export async function initializeDBConn() {
   db = client.db();
   mediaColl = db.collection('media');
   userColl = db.collection('users');
-}
-
-export function toObjectId(id) {
-  return new ObjectId(id);
 }

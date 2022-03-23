@@ -1,10 +1,9 @@
 import express from 'express';
-import CryptoJS from 'crypto-js';
+import { ObjectId } from 'mongodb';
 import { checkAuthToken } from './auth.js';
-import { userColl, toObjectId } from './db/conn.js';
+import { userColl } from './db/conn.js';
 
 const userRouter = express.Router();
-const tokenPass = `${process.env.TOKEN_KEY}`;
 
 userRouter.use(express.json());
 
@@ -52,7 +51,7 @@ userRouter.post('/infos', async (req, res) => {
       name: user.name, email: user.email, role: user.role, created: user.created,
     });
   } else {
-    const result = await userColl.findOne({ _id: toObjectId(token.id) });
+    const result = await userColl.findOne({ _id: ObjectId(token.id) });
     if (result == null) {
       res.send({ error: 'NoAccountError' });
       return;
@@ -62,8 +61,4 @@ userRouter.post('/infos', async (req, res) => {
     };
     res.send(JSON.stringify(userCache[token.id]));
   }
-});
-
-userRouter.options('/', (req, res) => {
-  res.sendStatus(200);
 });
