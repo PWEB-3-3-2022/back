@@ -72,7 +72,7 @@ export function checkAuthToken(authToken) {
  *         $ref: "#/components/responses/default"
  */
 authRouter.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
   const hashedPWD = await argon2.hash(password);
   console.log(`User name = ${email}, pswd is ${hashedPWD}`);
   const result = await userColl.findOne({ email });
@@ -82,7 +82,8 @@ authRouter.post('/login', async (req, res) => {
   }
   if (await argon2.verify(result.password, password)) {
     console.log(`Found: ${email}, pass=${hashedPWD}`);
-    const expirationDate = new Date().setDate(new Date().getDate() + 7);
+    const date = new Date().getDate();
+    const expirationDate = new Date().setDate(rememberMe ? date + 7 : date + 1);
     // eslint-disable-next-line no-underscore-dangle
     const authToken = CryptoJS.AES.encrypt(`${result._id}|${result.role}|${expirationDate}`, tokenPass);
     res.send({ authToken: `${authToken}`, expires: `${new Date(expirationDate).toUTCString()}` });
