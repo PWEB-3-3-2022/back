@@ -1,11 +1,10 @@
 import express from 'express';
-import { mediaColl } from './db/conn.js';
+import { mediaColl } from '../db/conn.js';
 
 const homeRouter = express.Router();
+export default homeRouter;
 
 homeRouter.use(express.json());
-
-export default homeRouter;
 
 /**
  * @openapi

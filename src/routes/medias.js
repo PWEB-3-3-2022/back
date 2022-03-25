@@ -1,18 +1,17 @@
 import express from 'express';
 import { ObjectId } from 'mongodb';
-import { mediaColl } from './db/conn.js';
+import { mediaColl } from '../db/conn.js';
 import {
   idFilter,
   textScoreProj,
   textScoreSort,
   textSearch,
-} from './db/bson.js';
+} from '../db/bson.js';
 
 const mediaRouter = express.Router();
+export default mediaRouter;
 
 mediaRouter.use(express.json());
-
-export default mediaRouter;
 
 /**
  * @openapi

@@ -1,52 +1,17 @@
 import express from 'express';
 import argon2 from 'argon2';
-import CryptoJS from 'crypto-js';
-import { userColl } from './db/conn.js';
+import { userColl } from '../db/conn.js';
+import { createAuthToken } from '../auth.js';
 
 const authRouter = express.Router();
-const tokenPass = `${process.env.TOKEN_KEY}`;
+export default authRouter;
 
 authRouter.use(express.json());
 
-export default authRouter;
-
 function validateEmail(email) {
-  return String(email).toLowerCase().match(
+  return email.toLowerCase().match(
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
   );
-}
-
-export function checkAuthToken(authToken) {
-  let result = {};
-  let decryptedToken = '';
-  try {
-    decryptedToken = CryptoJS.AES.decrypt(`${authToken}`, tokenPass)
-      .toString(CryptoJS.enc.Utf8);
-  } catch (error) {
-    result.error = 'InvalidTokenError';
-    return result;
-  }
-  const split = decryptedToken.split('|');
-  if (split.length !== 3) {
-    result.error = 'InvalidTokenError';
-    return result;
-  }
-
-  const valid = (new Date(parseInt(split[2], 10))).getTime() > 0;
-
-  if (!valid) {
-    result.error = 'InvalidTokenError';
-    return result;
-  }
-
-  if (Date.now() > result.expires) {
-    result.error = 'ExpiredTokenError';
-    return result;
-  }
-
-  result = { id: split[0], role: split[1], expires: split[2] };
-
-  return result;
 }
 
 /**
@@ -90,12 +55,12 @@ authRouter.post('/login', async (req, res) => {
   }
   if (await argon2.verify(result.password, password)) {
     console.log(`Found: ${email}, pass=${hashedPWD}`);
+    // eslint-disable-next-line no-underscore-dangle
+    const authToken = createAuthToken(result._id, result.role, rememberMe ? 30 : 7);
     const date = new Date().getDate();
     const expirationDate = new Date().setDate(rememberMe ? date + 7 : date + 1);
-    // eslint-disable-next-line no-underscore-dangle
-    const authToken = CryptoJS.AES.encrypt(`${result._id}|${result.role}|${expirationDate}`, tokenPass);
     res.send({
-      authToken: `${authToken}`,
+      authToken,
       expires: `${new Date(expirationDate).toUTCString()}`,
     });
   } else {

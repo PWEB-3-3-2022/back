@@ -1,13 +1,12 @@
 import express from 'express';
-import { checkAuthToken } from './auth.js';
-import { userColl } from './db/conn.js';
-import { idFilter } from './db/bson.js';
+import { userColl } from '../db/conn.js';
+import { idFilter } from '../db/bson.js';
+import { checkAuthToken } from '../auth.js';
 
 const userRouter = express.Router();
+export default userRouter;
 
 userRouter.use(express.json());
-
-export default userRouter;
 
 const userCache = [];
 
@@ -40,7 +39,7 @@ const userCache = [];
  */
 userRouter.post('/', async (req, res) => {
   const { authToken } = req.body;
-  const token = checkAuthToken(`${authToken}`);
+  const token = checkAuthToken(authToken);
   if ('error' in token) {
     res.send({ error: token.error });
     return;
