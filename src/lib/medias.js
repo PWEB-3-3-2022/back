@@ -6,7 +6,7 @@ import {
   textScoreProj,
   textScoreSort,
   textSearch,
-} from './db/filters.js';
+} from './db/bson.js';
 
 const mediaRouter = express.Router();
 

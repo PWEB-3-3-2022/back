@@ -10,17 +10,18 @@ authRouter.use(express.json());
 
 export default authRouter;
 
-const validateEmail = (email) => String(email)
-  .toLowerCase()
-  .match(
+function validateEmail(email) {
+  return String(email).toLowerCase().match(
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
   );
+}
 
 export function checkAuthToken(authToken) {
   let result = {};
   let decryptedToken = '';
   try {
-    decryptedToken = CryptoJS.AES.decrypt(`${authToken}`, tokenPass).toString(CryptoJS.enc.Utf8);
+    decryptedToken = CryptoJS.AES.decrypt(`${authToken}`, tokenPass)
+      .toString(CryptoJS.enc.Utf8);
   } catch (error) {
     result.error = 'InvalidTokenError';
     return result;
@@ -93,7 +94,10 @@ authRouter.post('/login', async (req, res) => {
     const expirationDate = new Date().setDate(rememberMe ? date + 7 : date + 1);
     // eslint-disable-next-line no-underscore-dangle
     const authToken = CryptoJS.AES.encrypt(`${result._id}|${result.role}|${expirationDate}`, tokenPass);
-    res.send({ authToken: `${authToken}`, expires: `${new Date(expirationDate).toUTCString()}` });
+    res.send({
+      authToken: `${authToken}`,
+      expires: `${new Date(expirationDate).toUTCString()}`,
+    });
   } else {
     console.log(`Not found: ${email}`);
     res.send({ error: 'NoAccountError' });
@@ -135,7 +139,6 @@ authRouter.post('/login', async (req, res) => {
  */
 authRouter.post('/register', async (req, res, next) => {
   const { name, email, password } = req.body;
-  const digest = await argon2.hash(password);
   if (!validateEmail(email)) {
     res.send({ error: 'IncorrectEmailError' });
     return;
@@ -145,16 +148,19 @@ authRouter.post('/register', async (req, res, next) => {
     res.send({ error: 'AccountAlreadyExistsError' });
     return;
   }
-  // eslint-disable-next-line object-curly-newline
-  const result = await userColl.insertOne({ name, email, password: digest, role: 'user', created: Date.now() });
+  const result = await userColl.insertOne(
+    {
+      name,
+      email,
+      password: await argon2.hash(password),
+      role: 'user',
+      created: new Date(),
+    },
+  );
   if (result.insertedId) {
     res.send({ response: 'OK' });
   } else {
     res.status(500);
     next(new Error('Cannot insert new user'));
   }
-});
-
-authRouter.options('/', (req, res) => {
-  res.sendStatus(200);
 });

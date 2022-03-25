@@ -9,7 +9,16 @@ import homeRouter from './lib/home.js';
 import authRouter from './lib/auth.js';
 import userRouter from './lib/user.js';
 
-const openapi = swaggerJsdoc(
+const app = express();
+
+// CORS middleware
+app.use(cors());
+
+// Call logger
+if (process.env.NODE_ENV !== 'production') app.use(morgan('combined'));
+
+// Swagger UI
+swaggerJsdoc(
   {
     failOnErrors: false,
     definition: {
@@ -26,18 +35,7 @@ const openapi = swaggerJsdoc(
       './src/lib/medias.js',
       './src/lib/user.js'],
   },
-);
-
-const app = express();
-
-// CORS middleware
-app.use(cors());
-
-// Call logger
-if (process.env.NODE_ENV !== 'production') app.use(morgan('combined'));
-
-// Swagger UI
-openapi.then((spec) => {
+).then((spec) => {
   app.use('/', swaggerUi.serve, swaggerUi.setup(
     spec,
     { customCss: '.topbar img { content: url("https://pweb-3-3-2022.github.io/front/assets/tcflix_logo.a4acd197.png"); }' },
@@ -54,7 +52,7 @@ app.use('/medias', mediaRouter);
 app.use('/auth', authRouter);
 
 // Register user endpoints
-app.use('/user', userRouter);
+app.use('/me', userRouter);
 
 // Connect to database and start web server on success
 initializeDBConn().then(() => {

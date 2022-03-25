@@ -1,7 +1,7 @@
 import express from 'express';
-import { ObjectId } from 'mongodb';
 import { checkAuthToken } from './auth.js';
 import { userColl } from './db/conn.js';
+import { idFilter } from './db/bson.js';
 
 const userRouter = express.Router();
 
@@ -14,7 +14,7 @@ const userCache = [];
 /**
  * @openapi
  *
- * /user/infos:
+ * /me:
  *   post:
  *     summary: "Retrieve user account infos"
  *     operationId: user.infos
@@ -34,31 +34,30 @@ const userCache = [];
  *         content:
  *           application/json:
  *             schema:
- *               type: string
+ *               $ref: "#/components/schemas/user"
  *       default:
  *         $ref: "#/components/responses/default"
  */
-userRouter.post('/infos', async (req, res) => {
+userRouter.post('/', async (req, res) => {
   const { authToken } = req.body;
   const token = checkAuthToken(`${authToken}`);
-  if (Object.prototype.hasOwnProperty.call(token, 'error')) {
+  if ('error' in token) {
     res.send({ error: token.error });
     return;
   }
   if (token.id in userCache) {
     const user = userCache[token.id];
-    res.send({
-      name: user.name, email: user.email, role: user.role, created: user.created,
-    });
+    res.send(user);
   } else {
-    const result = await userColl.findOne({ _id: ObjectId(token.id) });
+    const result = await userColl.findOne(
+      idFilter(token.id),
+      { projection: { password: 0 } },
+    );
     if (result == null) {
       res.send({ error: 'NoAccountError' });
       return;
     }
-    userCache[token.id] = {
-      name: result.name, email: result.email, role: result.role, created: result.created,
-    };
-    res.send(JSON.stringify(userCache[token.id]));
+    userCache[token.id] = result;
+    res.send(result);
   }
 });

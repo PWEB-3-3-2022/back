@@ -34,7 +34,7 @@ components:
         - title
         - year
     movie:
-      description: A movie
+      description: 'A movie'
       allOf:
         - $ref: '#/components/schemas/media'
         - type: object
@@ -54,7 +54,7 @@ components:
             description:
               type: string
     tvshow:
-      description: A tv show
+      description: 'A tv show'
       allOf:
         - $ref: '#/components/schemas/media'
         - type: object
@@ -70,6 +70,20 @@ components:
                     type: array
                     items:
                       type: string
+    user:
+      description: 'A TCflix account'
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        created:
+          type: string
   responses:
     default:
       description: 'Unexpected server error'
