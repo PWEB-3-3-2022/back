@@ -1,21 +1,26 @@
-import CryptoJS from 'crypto-js';
+import crypto from 'crypto';
 
-const tokenPass = `${process.env.TOKEN_KEY}`;
+const tokenPass = Buffer.from(process.env.TOKEN_KEY, 'hex');
 
 export function createAuthToken(id, role, durationDays = 7) {
-  return CryptoJS.AES.encrypt(`${id}|${role}|${Date.now() + durationDays * 24 * 3600 * 1000}`, tokenPass).toString();
+  const IV = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-gcm', tokenPass, IV);
+  const token = cipher.update(`${id}|${role}|${Date.now() + durationDays * 24 * 3600 * 1000}`, 'utf8');
+  return Buffer.concat([IV, token]).toString('base64url');
 }
 
 export function checkAuthToken(authToken) {
   let result = {};
-  let decryptedToken = '';
+  let token = '';
   try {
-    decryptedToken = CryptoJS.AES.decrypt(`${authToken}`, tokenPass).toString(CryptoJS.enc.Utf8);
+    const buf = Buffer.from(authToken, 'base64url');
+    const decipher = crypto.createDecipheriv('aes-256-gcm', tokenPass, buf.subarray(0, 16));
+    token = decipher.update(buf.subarray(16), undefined, 'utf8');
   } catch (error) {
     result.error = 'InvalidTokenError';
     return result;
   }
-  const split = decryptedToken.split('|');
+  const split = token.split('|');
   if (split.length !== 3) {
     result.error = 'InvalidTokenError';
     return result;
