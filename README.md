@@ -34,6 +34,8 @@ e.g. `mongodb://localhost:27017/tcflix-test`)
 Use a locally deployed mongodb instance or the one in mongodb atlas. If using the one on mongodb atlas please use the
 database `tcflix-test`.
 
+Set `TOKEN_KEY` to a 64 chars hex string as the key to encrypt auth tokens.
+
 ```shell
 node app.js
 ```

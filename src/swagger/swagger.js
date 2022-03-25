@@ -14,10 +14,10 @@ export default function createSwaggerRoutes(app) {
       },
       apis: [
         './src/swagger/defs.yml',
-        './src/lib/auth.js',
-        './src/lib/home.js',
-        './src/lib/medias.js',
-        './src/lib/user.js'],
+        './src/routes/auth.js',
+        './src/routes/home.js',
+        './src/routes/medias.js',
+        './src/routes/user.js'],
     },
   ).then((spec) => {
     app.use('/', swaggerUi.serve, swaggerUi.setup(
