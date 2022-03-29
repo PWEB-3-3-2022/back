@@ -4,7 +4,7 @@ export function idFilter(id) {
   return { _id: new ObjectId(id) };
 }
 
-export function textSearch(text, language) {
+export function textSearch(text, language = 'en') {
   return {
     $text: {
       $search: text,

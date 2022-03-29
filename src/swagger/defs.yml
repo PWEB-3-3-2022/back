@@ -39,26 +39,28 @@ components:
         - $ref: '#/components/schemas/media'
         - type: object
           properties:
+            description:
+              type: string
+            duration:
+              type: string
             genres:
               type: array
               items:
                 type: string
-            director:
-              type: string
-            actors:
+            cast:
               type: array
               items:
                 type: string
-            poster:
+            poster_small:
               $ref: '#/components/schemas/url'
-            description:
-              type: string
     tvshow:
       description: 'A tv show'
       allOf:
         - $ref: '#/components/schemas/media'
         - type: object
           properties:
+            poster_small:
+              $ref: '#/components/schemas/url'
             seasons:
               type: array
               items:

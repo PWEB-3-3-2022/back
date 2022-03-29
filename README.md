@@ -49,3 +49,10 @@ node app.js
 5. Create a pull request
 6. Wait for merge
 
+
+### Database
+
+```javascript
+// Create the fts index in mongosh
+db.media.createIndex({"title": "text", "description": "text", "genres": "text", "cast": "text"}, {name: "fts", weights: {"title": 10, "description": 4, "genres": 4, "cast": 8}})
+```
