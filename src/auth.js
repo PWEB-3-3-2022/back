@@ -12,6 +12,24 @@ export function createAuthToken(id, role, durationDays = 7) {
   return Buffer.concat([IV, token]).toString('base64url');
 }
 
+export function checkCookieAuthToken(cookieHeader) {
+  if (!(typeof (cookieHeader) === 'string')) {
+    return ('Error');
+  }
+  const parsedCookie = cookieHeader
+    .split(';')
+    .map((v) => v.split('='))
+    .reduce((acc, v) => {
+      acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+      return acc;
+    }, {});
+
+  if (!parsedCookie.hasOwnProperty('authToken')) {
+    return ('Error');
+  }
+  return parsedCookie.authToken;
+}
+
 export function checkAuthToken(authToken) {
   let result = {};
   let token = '';
