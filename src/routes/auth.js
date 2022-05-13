@@ -46,15 +46,15 @@ function validateEmail(email) {
  */
 authRouter.post('/login', async (req, res) => {
   const { email, password, rememberMe } = req.body;
-  const hashedPWD = await argon2.hash(password);
-  console.log(`User name = ${email}, pswd is ${hashedPWD}`);
+  // const hashedPWD = await argon2.hash(password);
+  // console.log(`User name = ${email}, pswd is ${hashedPWD}`);
   const result = await userColl.findOne({ email });
   if (result == null) {
     res.send({ error: 'NoAccountError' });
     return;
   }
   if (await argon2.verify(result.password, password)) {
-    console.log(`Found: ${email}, pass=${hashedPWD}`);
+    // console.log(`Found: ${email}, pass=${hashedPWD}`);
     // eslint-disable-next-line no-underscore-dangle
     const authToken = createAuthToken(result._id, result.role, rememberMe ? 30 : 7);
     const date = new Date().getDate();
