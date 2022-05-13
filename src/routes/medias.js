@@ -7,6 +7,7 @@ import {
   textScoreSort,
   textSearch,
 } from '../db/bson.js';
+import { downloadAuth, downloadLink } from '../backblaze.js';
 
 const mediaRouter = express.Router();
 export default mediaRouter;
@@ -144,6 +145,48 @@ mediaRouter.get('/:id', async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+});
+
+/**
+ * @openapi
+ *
+ * /medias/{id}/play:
+ *   get:
+ *     summary: "Retrieve a media play info"
+ *     operationId: medias.play
+ *     parameters:
+ *       - $ref: "#/components/parameters/pathObjectId"
+ *     responses:
+ *       "200":
+ *         description: "Media play info"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 src:
+ *                   $ref: '#/components/schemas/url'
+ *                 token:
+ *                   type: string
+ *       "400":
+ *         description: "Invalid id"
+ *       default:
+ *         $ref: "#/components/responses/default"
+ */
+mediaRouter.get('/:id/play', async (req, res, next) => {
+  if (!ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    next(new Error('Invalid id'));
+    return;
+  }
+  /*
+  try {
+    const result = await mediaColl.findOne(idFilter(req.params.id));
+    res.json(result);
+  } catch (e) {
+    next(e);
+  } */
+  res.json({ src: `${downloadLink()}/media/bbb/bbb.mp4`, token: await downloadAuth('media/bbb') });
 });
 
 /**

@@ -7,6 +7,7 @@ import homeRouter from './routes/home.js';
 import authRouter from './routes/auth.js';
 import userRouter from './routes/user.js';
 import createSwaggerRoutes from './swagger/swagger.js';
+import { authorizeB2 } from './backblaze.js';
 
 const app = express();
 
@@ -33,6 +34,8 @@ app.use('/me', userRouter);
 // Connect to database and start web server on success
 // Ignore linter here
 await initializeDBConn();
+await authorizeB2();
+
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Started on port ${port}`);
