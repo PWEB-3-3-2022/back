@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 
 // Defaults to a mongodb instance on localhost
 export const client = new MongoClient(
-  process.env.MONGODB_CONN || 'mongodb+srv://admin:admin@maincluster.av6ou.mongodb.net/tcflix-test?ssl=true',
+  process.env.MONGODB_CONN || '',
 );
 
 // Variables should not be used until initialization
