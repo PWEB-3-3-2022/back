@@ -44,6 +44,7 @@ function validateEmail(email) {
  *       default:
  *         $ref: "#/components/responses/default"
  */
+
 authRouter.post('/login', async (req, res) => {
   const { email, password, rememberMe } = req.body;
   // const hashedPWD = await argon2.hash(password);
@@ -59,10 +60,13 @@ authRouter.post('/login', async (req, res) => {
     const authToken = createAuthToken(result._id, result.role, rememberMe ? 30 : 7);
     const date = new Date().getDate();
     const expirationDate = new Date().setDate(rememberMe ? date + 7 : date + 1);
-    res.send({
-      authToken,
-      expires: `${new Date(expirationDate).toUTCString()}`,
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Headers', ['Content-Type', 'Authorization']);
+    res.cookie('authToken', authToken, {
+      sameSite: 'none', secure: true, path: '/', httpOnly: true, maxAge: expirationDate,
     });
+    res.send({ ok: 'ok' });
   } else {
     console.log(`Not found: ${email}`);
     res.send({ error: 'NoAccountError' });

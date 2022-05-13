@@ -11,7 +11,14 @@ import createSwaggerRoutes from './swagger/swagger.js';
 const app = express();
 
 // CORS middleware
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'PUT'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 // Call logger
 if (process.env.NODE_ENV !== 'production') app.use(morgan('combined'));

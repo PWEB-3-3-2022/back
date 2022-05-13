@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '../.env' });
 
 const tokenPass = Buffer.from(process.env.TOKEN_KEY, 'hex');
 

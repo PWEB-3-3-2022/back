@@ -38,8 +38,24 @@ const userCache = [];
  *         $ref: "#/components/responses/default"
  */
 userRouter.post('/', async (req, res) => {
-  const { authToken } = req.body;
-  const token = checkAuthToken(authToken);
+  const parseCookie = (str) => str
+    .split(';')
+    .map((v) => v.split('='))
+    .reduce((acc, v) => {
+      acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+      return acc;
+    }, {});
+  const cookieHeader = req.header('Cookie');
+  if (!(typeof (cookieHeader) === 'string')) {
+    res.send({ error: 'No Cookies' });
+    return;
+  }
+  const cookies = parseCookie(cookieHeader);
+  if (!cookies.hasOwnProperty('authToken')) {
+    res.send({ error: 'No authToken' });
+    return;
+  }
+  const token = checkAuthToken(cookies.authToken);
   if ('error' in token) {
     res.send({ error: token.error });
     return;
