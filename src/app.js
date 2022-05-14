@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { initializeDBConn } from './db/conn.js';
 import mediaRouter from './routes/medias.js';
 import homeRouter from './routes/home.js';
@@ -12,7 +13,13 @@ import { authorizeB2 } from './backblaze.js';
 const app = express();
 
 // CORS middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://pweb-3-3-2022.github.io'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
+
+app.use(cookieParser());
 
 // Call logger
 if (process.env.NODE_ENV !== 'production') app.use(morgan('combined'));

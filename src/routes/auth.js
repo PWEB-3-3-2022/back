@@ -37,6 +37,11 @@ function validateEmail(email) {
  *     responses:
  *       "200":
  *         description: "On success, return an auth token"
+ *         headers:
+ *           Set-Cookie:
+ *             description: "Auth token"
+ *             schema:
+ *               type: string
  *         content:
  *           application/json:
  *             schema:
@@ -44,6 +49,7 @@ function validateEmail(email) {
  *       default:
  *         $ref: "#/components/responses/default"
  */
+
 authRouter.post('/login', async (req, res) => {
   const { email, password, rememberMe } = req.body;
   // const hashedPWD = await argon2.hash(password);
@@ -59,10 +65,10 @@ authRouter.post('/login', async (req, res) => {
     const authToken = createAuthToken(result._id, result.role, rememberMe ? 30 : 7);
     const date = new Date().getDate();
     const expirationDate = new Date().setDate(rememberMe ? date + 7 : date + 1);
-    res.send({
-      authToken,
-      expires: `${new Date(expirationDate).toUTCString()}`,
+    res.cookie('authToken', authToken, {
+      sameSite: 'none', secure: true, path: '/', httpOnly: true, maxAge: expirationDate,
     });
+    res.send({ ok: 'ok' });
   } else {
     console.log(`Not found: ${email}`);
     res.send({ error: 'NoAccountError' });

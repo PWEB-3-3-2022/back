@@ -1,7 +1,11 @@
 import crypto from 'crypto';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '../.env' });
 
 const tokenPass = Buffer.from(process.env.TOKEN_KEY, 'hex');
 
+// Create a new auth token
 export function createAuthToken(id, role, durationDays = 7) {
   const IV = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv('aes-256-gcm', tokenPass, IV);
@@ -9,7 +13,8 @@ export function createAuthToken(id, role, durationDays = 7) {
   return Buffer.concat([IV, token]).toString('base64url');
 }
 
-export function checkAuthToken(authToken) {
+// Verify the validity of an auth token
+function checkAuthToken(authToken) {
   let result = {};
   let token = '';
   try {
@@ -41,4 +46,19 @@ export function checkAuthToken(authToken) {
   result = { id: split[0], role: split[1], expires: split[2] };
 
   return result;
+}
+
+// Verify auth token and set req.auth to the auth object
+export async function requireAuth(req, res, next) {
+  if (req.cookies.authToken) {
+    const auth = checkAuthToken(req.cookies.authToken);
+    if ('error' in auth) {
+      next({ code: 401, error: auth.error });
+      return;
+    }
+    req.auth = auth;
+    next();
+    return;
+  }
+  next({ code: 401, error: 'No auth token' });
 }
