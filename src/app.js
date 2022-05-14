@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { initializeDBConn } from './db/conn.js';
 import mediaRouter from './routes/medias.js';
 import homeRouter from './routes/home.js';
@@ -11,13 +12,13 @@ import createSwaggerRoutes from './swagger/swagger.js';
 const app = express();
 
 // CORS middleware
-const corsOptions = {
+app.use(cors({
   origin: ['http://localhost:3000', 'https://pweb-3-3-2022.github.io/front/'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
+  credentials: true,
+}));
 
-app.use(cors(corsOptions));
+app.use(cookieParser());
 
 // Call logger
 if (process.env.NODE_ENV !== 'production') app.use(morgan('combined'));

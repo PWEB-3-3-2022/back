@@ -37,6 +37,11 @@ function validateEmail(email) {
  *     responses:
  *       "200":
  *         description: "On success, return an auth token"
+ *         headers:
+ *           Set-Cookie:
+ *             description: "Auth token"
+ *             schema:
+ *               type: string
  *         content:
  *           application/json:
  *             schema:
