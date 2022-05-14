@@ -39,7 +39,11 @@ app.use('/me', userRouter);
 
 app.use((err, req, res, next) => {
   //console.log(err);
-  res.status(err.code).send({ error: err.error });
+  if (err.code)
+    res.status(err.code)
+  else
+    res.status(500)
+  res.send({ error: err.error });
 });
 
 // Connect to database and start web server on success

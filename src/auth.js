@@ -54,10 +54,11 @@ export async function requireAuth(req, res, next) {
     const auth = checkAuthToken(req.cookies.authToken);
     if ('error' in auth) {
       next({ code: 401, error: auth.error });
-    } else {
-      req.auth = auth;
-      next();
+      return;
     }
+    req.auth = auth;
+    next();
+    return;
   }
   next({ code: 401, error: 'No auth token' });
 }

@@ -28,6 +28,8 @@ homeRouter.use(express.json());
  *                 $ref: "#/components/schemas/movie"
  *       default:
  *         $ref: "#/components/responses/default"
+ *     security:
+ *       - token: []
  */
 homeRouter.get('/movies', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 4;
@@ -58,6 +60,8 @@ homeRouter.get('/movies', async (req, res) => {
  *                 $ref: "#/components/schemas/tvshow"
  *       default:
  *         $ref: "#/components/responses/default"
+ *     security:
+ *       - token: []
  */
 homeRouter.get('/tvshows', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 4;

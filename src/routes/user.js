@@ -30,7 +30,7 @@ const userCache = [];
  *     security:
  *       - token: []
  */
-userRouter.get('/', async (req, res) => {
+userRouter.get('/', async (req, res, next) => {
   if (req.auth.id in userCache) {
     const user = userCache[req.auth.id];
     res.send(user);
@@ -40,7 +40,7 @@ userRouter.get('/', async (req, res) => {
       { projection: { password: 0 } },
     );
     if (result == null) {
-      res.send({ error: 'NoAccountError' });
+      next({ code: 400, error: 'NoAccountError' });
       return;
     }
     userCache[req.auth.id] = result;

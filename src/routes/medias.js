@@ -30,6 +30,8 @@ mediaRouter.use(express.json());
  *               $ref: '#/components/schemas/id'
  *       default:
  *         $ref: "#/components/responses/default"
+ *     security:
+ *       - token: []
  */
 mediaRouter.post('/', async (req, res) => {
   const result = await mediaColl.insertOne(req.body);
@@ -62,13 +64,14 @@ mediaRouter.post('/', async (req, res) => {
  *                 $ref: "#/components/schemas/media"
  *       default:
  *         $ref: "#/components/responses/default"
+ *     security:
+ *       - token: []
  */
 mediaRouter.get('/search', async (req, res, next) => {
   const { query } = req.query;
 
   if (!query) {
-    res.status(400);
-    next(new Error('Expected query field \'query\''));
+    next({ code: 400, error: 'Expected query field \'query\'' });
     return;
   }
 
@@ -101,6 +104,8 @@ mediaRouter.get('/search', async (req, res, next) => {
  *                 $ref: "#/components/schemas/media"
  *       default:
  *         $ref: "#/components/responses/default"
+ *     security:
+ *       - token: []
  */
 mediaRouter.get('/', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 16;
@@ -130,11 +135,12 @@ mediaRouter.get('/', async (req, res) => {
  *         description: "Invalid id"
  *       default:
  *         $ref: "#/components/responses/default"
+ *     security:
+ *       - token: []
  */
 mediaRouter.get('/:id', async (req, res, next) => {
   if (!ObjectId.isValid(req.params.id)) {
-    res.status(400);
-    next(new Error('Invalid id'));
+    next({ code: 400, error: 'Invalid id' });
     return;
   }
   try {
@@ -161,11 +167,12 @@ mediaRouter.get('/:id', async (req, res, next) => {
  *         description: "Invalid id"
  *       default:
  *         $ref: "#/components/responses/default"
+ *     security:
+ *       - token: []
  */
 mediaRouter.put('/:id', async (req, res, next) => {
   if (!ObjectId.isValid(req.params.id)) {
-    res.status(400);
-    next(new Error('Invalid id'));
+    next({ code: 400, error: 'Invalid id' });
     return;
   }
 
@@ -173,8 +180,7 @@ mediaRouter.put('/:id', async (req, res, next) => {
   if (result.modifiedCount === 1) {
     res.send('OK');
   } else {
-    res.status(400);
-    next(new Error(`Media with id '${req.params.id}' doesn't exist`));
+    next({ code: 400, error: `Media with id '${req.params.id}' doesn't exist` });
   }
 });
 
@@ -194,11 +200,12 @@ mediaRouter.put('/:id', async (req, res, next) => {
  *         description: "Invalid id"
  *       default:
  *         $ref: "#/components/responses/default"
+ *     security:
+ *       - token: []
  */
 mediaRouter.delete('/:id', async (req, res, next) => {
   if (!ObjectId.isValid(req.params.id)) {
-    res.status(400);
-    next(new Error('Invalid id'));
+    next({ code: 400, error: 'Invalid id' });
     return;
   }
 
@@ -206,7 +213,6 @@ mediaRouter.delete('/:id', async (req, res, next) => {
   if (result.deletedCount === 1) {
     res.send('OK');
   } else {
-    res.status(400);
-    next(new Error(`Media with id '${req.params.id}' doesn't exist`));
+    next({ code: 400, error: `Media with id '${req.params.id}' doesn't exist` });
   }
 });
