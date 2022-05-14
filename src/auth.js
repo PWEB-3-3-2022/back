@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '../.env' });
 
 const tokenPass = Buffer.from(process.env.TOKEN_KEY, 'hex');
 
@@ -7,6 +10,24 @@ export function createAuthToken(id, role, durationDays = 7) {
   const cipher = crypto.createCipheriv('aes-256-gcm', tokenPass, IV);
   const token = cipher.update(`${id}|${role}|${Date.now() + durationDays * 24 * 3600 * 1000}`, 'utf8');
   return Buffer.concat([IV, token]).toString('base64url');
+}
+
+export function checkCookieAuthToken(cookieHeader) {
+  if (!(typeof (cookieHeader) === 'string')) {
+    return ('Error');
+  }
+  const parsedCookie = cookieHeader
+    .split(';')
+    .map((v) => v.split('='))
+    .reduce((acc, v) => {
+      acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+      return acc;
+    }, {});
+
+  if (!parsedCookie.hasOwnProperty('authToken')) {
+    return ('Error');
+  }
+  return parsedCookie.authToken;
 }
 
 export function checkAuthToken(authToken) {

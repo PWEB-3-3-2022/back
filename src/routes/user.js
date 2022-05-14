@@ -1,7 +1,7 @@
 import express from 'express';
 import { userColl } from '../db/conn.js';
 import { idFilter } from '../db/bson.js';
-import { checkAuthToken } from '../auth.js';
+import { checkAuthToken, checkCookieAuthToken } from '../auth.js';
 
 const userRouter = express.Router();
 export default userRouter;
@@ -38,8 +38,13 @@ const userCache = [];
  *         $ref: "#/components/responses/default"
  */
 userRouter.post('/', async (req, res) => {
-  const { authToken } = req.body;
-  const token = checkAuthToken(authToken);
+  const cookieHeader = req.header('Cookie');
+  const ParsedCookie = checkCookieAuthToken(cookieHeader);
+  if (ParsedCookie === 'Error') {
+    res.send({ error: 'No authToken error' });
+    return;
+  }
+  const token = checkAuthToken(ParsedCookie);
   if ('error' in token) {
     res.send({ error: token.error });
     return;
