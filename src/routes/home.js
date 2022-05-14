@@ -1,9 +1,11 @@
 import express from 'express';
 import { mediaColl } from '../db/conn.js';
+import { requireAuth } from '../auth.js';
 
 const homeRouter = express.Router();
 export default homeRouter;
 
+homeRouter.use(requireAuth);
 homeRouter.use(express.json());
 
 /**

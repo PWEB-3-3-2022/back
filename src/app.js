@@ -37,6 +37,11 @@ app.use('/auth', authRouter);
 // Register user endpoints
 app.use('/me', userRouter);
 
+app.use((err, req, res, next) => {
+  //console.log(err);
+  res.status(err.code).send({ error: err.error });
+});
+
 // Connect to database and start web server on success
 // Ignore linter here
 await initializeDBConn();

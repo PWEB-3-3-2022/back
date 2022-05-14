@@ -2,15 +2,14 @@ import express from 'express';
 import { ObjectId } from 'mongodb';
 import { mediaColl } from '../db/conn.js';
 import {
-  idFilter,
-  textScoreProj,
-  textScoreSort,
-  textSearch,
+  idFilter, textScoreProj, textScoreSort, textSearch,
 } from '../db/bson.js';
+import { requireAuth } from '../auth.js';
 
 const mediaRouter = express.Router();
 export default mediaRouter;
 
+mediaRouter.use(requireAuth);
 mediaRouter.use(express.json());
 
 /**
