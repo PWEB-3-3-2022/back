@@ -36,6 +36,8 @@ database `tcflix-test`.
 
 Set `TOKEN_KEY` to a 64 chars hex string as the key to encrypt auth tokens.
 
+Set `B2_KEY_ID` to the backblaze key id and `B2_KEY`to the backblaze key.
+
 ```shell
 node app.js
 ```
