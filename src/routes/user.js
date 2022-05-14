@@ -1,11 +1,12 @@
 import express from 'express';
 import { userColl } from '../db/conn.js';
 import { idFilter } from '../db/bson.js';
-import { checkAuth } from '../auth.js';
+import { requireAuth } from '../auth.js';
 
 const userRouter = express.Router();
 export default userRouter;
 
+userRouter.use(requireAuth);
 userRouter.use(express.json());
 
 const userCache = [];
@@ -29,25 +30,20 @@ const userCache = [];
  *     security:
  *       - token: []
  */
-userRouter.get('/', async (req, res) => {
-  const auth = checkAuth(req);
-  if ('error' in auth) {
-    res.send({ error: auth.error });
-    return;
-  }
-  if (auth.id in userCache) {
-    const user = userCache[auth.id];
+userRouter.get('/', async (req, res, next) => {
+  if (req.auth.id in userCache) {
+    const user = userCache[req.auth.id];
     res.send(user);
   } else {
     const result = await userColl.findOne(
-      idFilter(auth.id),
+      idFilter(req.auth.id),
       { projection: { password: 0 } },
     );
     if (result == null) {
-      res.send({ error: 'NoAccountError' });
+      next({ code: 400, error: 'NoAccountError' });
       return;
     }
-    userCache[auth.id] = result;
+    userCache[req.auth.id] = result;
     res.send(result);
   }
 });
