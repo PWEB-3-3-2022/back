@@ -117,3 +117,9 @@ components:
           schema:
             $ref: '#/components/schemas/media'
       required: true
+  securitySchemes:
+    token:
+      type: apiKey
+      description: Auth token passed through a cookie
+      name: authToken
+      in: cookie

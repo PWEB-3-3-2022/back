@@ -20,7 +20,7 @@
     "morgan": "^1.10.0",
     "openapi-types": "^10.0.0",
     "swagger-jsdoc": "^7.0.0-rc.6",
-    "swagger-ui-express": "^4.3.0"
+    "swagger-ui-express": "^4.4.0"
   },
   "devDependencies": {
     "eslint": "^8.15.0",
