@@ -13,7 +13,7 @@ const app = express();
 
 // CORS middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://pweb-3-3-2022.github.io'],
+  origin: 'https://pweb-3-3-2022.github.io',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
