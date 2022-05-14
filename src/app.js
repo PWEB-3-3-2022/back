@@ -13,7 +13,7 @@ const app = express();
 
 // CORS middleware
 app.use(cors({
-  origin: 'https://pweb-3-3-2022.github.io',
+  origin: ['http://localhost:3000', 'https://pweb-3-3-2022.github.io'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
@@ -36,15 +36,6 @@ app.use('/auth', authRouter);
 
 // Register user endpoints
 app.use('/me', userRouter);
-
-app.use((err, req, res, next) => {
-  //console.log(err);
-  if (err.code)
-    res.status(err.code)
-  else
-    res.status(500)
-  res.send({ error: err.error });
-});
 
 // Connect to database and start web server on success
 // Ignore linter here
