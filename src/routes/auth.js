@@ -8,7 +8,7 @@ export default authRouter;
 
 authRouter.use(express.json());
 
-function validateEmail(email) {
+export function validateEmail(email) {
   return email.toLowerCase().match(
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
   );
@@ -126,6 +126,7 @@ authRouter.post('/register', async (req, res, next) => {
       password: await argon2.hash(password),
       role: 'user',
       created: new Date(),
+      profiles: { 0: { name, email, picture: 'https://occ-0-784-778.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABb_DHMVDo8hDAK3yCzp_kViqNAzRqtn4oFSvy8FppaaBvPEgXCYaVMOX7QyrOZvuznXMuC7CCX4H0-NmnBa5bxs4CCEluvvauk87.png?r=a41' } },
     },
   );
   if (result.insertedId) {
