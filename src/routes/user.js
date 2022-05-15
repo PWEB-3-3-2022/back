@@ -54,7 +54,7 @@ userRouter.get('/', async (req, res, next) => {
  * /me/changeProfileEmail:
  *   post:
  *     summary: "Change profile email"
- *     operationId: user.changeProfileEmail
+ *     operationId: user.profile.edit.email
  *     requestBody:
  *       content:
  *         application/json:
@@ -93,6 +93,49 @@ userRouter.post('/changeProfileEmail', async (req, res) => {
   setValue[`profiles.${profileId}.1`] = newEmail;
   const updateDocument = {
     $set: setValue,
+  };
+  await userColl.updateOne(query, updateDocument);
+  res.send({ response: 'OK' });
+});
+
+/**
+ * @openapi
+ *
+ * /me/deleteUserProfile:
+ *   post:
+ *     summary: "Delete user profile"
+ *     operationId: user.profile.delete
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profileId:
+ *                  type: int
+ *             required:
+ *               - authToken
+ *               - profileId
+ *     responses:
+ *       "200":
+ *         description: "The profile has been deleted."
+ *       default:
+ *         $ref: "#/components/responses/default"
+ *     security:
+ *       - token: []
+ */
+userRouter.post('/deleteUserProfile', async (req, res) => {
+  const { profileId } = req.body;
+  if (Number.isNaN(parseInt(profileId, 10)) || userCache[req.auth.id].profiles[profileId] === null || profileId == 0) {
+    res.send({ error: 'InvalidProfileIdError' });
+    return;
+  }
+  delete userCache[req.auth.id].profiles[profileId];
+  const query = idFilter(req.auth.id);
+  const unsetValue = {};
+  unsetValue[`profiles.${profileId}`] = 1;
+  const updateDocument = {
+    $unset: unsetValue,
   };
   await userColl.updateOne(query, updateDocument);
   res.send({ response: 'OK' });
