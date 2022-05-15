@@ -2,17 +2,12 @@ import express from 'express';
 import argon2 from 'argon2';
 import { userColl } from '../db/conn.js';
 import { createAuthToken } from '../auth.js';
+import { validateEmail } from '../utils.js';
 
 const authRouter = express.Router();
 export default authRouter;
 
 authRouter.use(express.json());
-
-export function validateEmail(email) {
-  return email.toLowerCase().match(
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  );
-}
 
 /**
  * @openapi
