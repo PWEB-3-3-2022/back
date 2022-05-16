@@ -88,6 +88,18 @@ components:
           type: string
         profiles:
           type: array
+          items:
+            $ref: '#components/schemas/profile'
+    profile:
+      description: 'A user profile'
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        picture:
+          $ref: '#/components/schemas/url'
   responses:
     default:
       description: 'Unexpected server error'
