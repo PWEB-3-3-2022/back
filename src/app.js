@@ -8,7 +8,7 @@ import homeRouter from './routes/home.js';
 import authRouter from './routes/auth.js';
 import userRouter from './routes/user.js';
 import createSwaggerRoutes from './swagger/swagger.js';
-import { authorizeB2 } from './backblaze.js';
+import { authorizeB2 } from './services/backblaze.js';
 
 const app = express();
 

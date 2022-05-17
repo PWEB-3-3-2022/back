@@ -1,7 +1,7 @@
 import express from 'express';
 import argon2 from 'argon2';
 import { userColl } from '../db/conn.js';
-import { createAuthToken } from '../auth.js';
+import { createAuthToken } from '../services/auth.js';
 import { validateEmail } from '../utils.js';
 
 const authRouter = express.Router();
@@ -70,6 +70,8 @@ authRouter.post('/login', async (req, res) => {
   }
 });
 
+const DEFAULT_PROFILE_PICTURE = 'https://occ-0-784-778.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABb_DHMVDo8hDAK3yCzp_kViqNAzRqtn4oFSvy8FppaaBvPEgXCYaVMOX7QyrOZvuznXMuC7CCX4H0-NmnBa5bxs4CCEluvvauk87.png?r=a41';
+
 /**
  * @openapi
  *
@@ -106,12 +108,12 @@ authRouter.post('/login', async (req, res) => {
 authRouter.post('/register', async (req, res, next) => {
   const { name, email, password } = req.body;
   if (!validateEmail(email)) {
-    res.send({ error: 'IncorrectEmailError' });
+    next({ code: 400, error: 'IncorrectEmailError' });
     return;
   }
   const search = await userColl.findOne({ email });
   if (search != null) {
-    res.send({ error: 'AccountAlreadyExistsError' });
+    next({ code: 400, error: 'AccountAlreadyExistsError' });
     return;
   }
   const result = await userColl.insertOne(
@@ -121,13 +123,12 @@ authRouter.post('/register', async (req, res, next) => {
       password: await argon2.hash(password),
       role: 'user',
       created: new Date(),
-      profiles: { 0: { name, email, picture: 'https://occ-0-784-778.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABb_DHMVDo8hDAK3yCzp_kViqNAzRqtn4oFSvy8FppaaBvPEgXCYaVMOX7QyrOZvuznXMuC7CCX4H0-NmnBa5bxs4CCEluvvauk87.png?r=a41' } },
+      profiles: { 0: { name, email, picture: DEFAULT_PROFILE_PICTURE } },
     },
   );
   if (result.insertedId) {
     res.send({ response: 'OK' });
   } else {
-    res.status(500);
-    next(new Error('Cannot insert new user'));
+    next({ code: 500, error: 'Cannot insert new user' });
   }
 });

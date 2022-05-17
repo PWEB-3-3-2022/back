@@ -1,11 +1,12 @@
 import express from 'express';
 import { ObjectId } from 'mongodb';
 import { mediaColl } from '../db/conn.js';
+import { idFilter } from '../db/bson.js';
+import { downloadAuth, downloadLink } from '../services/backblaze.js';
+import { requireAuth } from '../services/auth.js';
 import {
-  idFilter, textScoreProj, textScoreSort, textSearch,
-} from '../db/bson.js';
-import { downloadAuth, downloadLink } from '../backblaze.js';
-import { requireAuth } from '../auth.js';
+  createMedia, findAny, findById, searchMedias,
+} from '../services/medias.js';
 
 const mediaRouter = express.Router();
 export default mediaRouter;
@@ -35,7 +36,7 @@ mediaRouter.use(express.json());
  *       - token: []
  */
 mediaRouter.post('/', async (req, res) => {
-  const result = await mediaColl.insertOne(req.body);
+  const result = await createMedia(req.body);
   res.send(`${result.insertedId}`);
 });
 
@@ -77,11 +78,7 @@ mediaRouter.get('/search', async (req, res, next) => {
   }
 
   const limit = req.query.count ? parseInt(req.query.count, 10) : 10;
-  const result = await mediaColl.find(
-    textSearch(query, 'fr'),
-    { projection: textScoreProj, sort: textScoreSort, limit },
-  ).toArray();
-  res.json(result);
+  res.json(await searchMedias(query, limit));
 });
 
 /**
@@ -112,8 +109,7 @@ mediaRouter.get('/', async (req, res) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 16;
   const type = req.query.type || 'movie';
 
-  const result = await mediaColl.find({ type }, { limit: count }).toArray();
-  res.json(result);
+  res.json(await findAny(type, count));
 });
 
 /**
@@ -145,7 +141,7 @@ mediaRouter.get('/:id', async (req, res, next) => {
     return;
   }
   try {
-    const result = await mediaColl.findOne(idFilter(req.params.id));
+    const result = await findById(req.params.id);
     res.json(result);
   } catch (e) {
     next(e);

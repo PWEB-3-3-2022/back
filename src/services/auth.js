@@ -10,7 +10,19 @@ export function createAuthToken(id, role, durationDays = 7) {
   return Buffer.concat([IV, token]).toString('base64url');
 }
 
-// Verify the validity of an auth token
+/**
+ * Authentication object
+ * @typedef {Object} Auth
+ * @property {string} id - User id
+ * @property {string} role
+ * @property {string} expires
+ */
+
+/**
+ * Check an encrypted auth token
+ * @param {string} authToken - Base64 encoded auth token
+ * @returns {Auth}
+ */
 function checkAuthToken(authToken) {
   let result = {};
   let token = '';
@@ -40,17 +52,21 @@ function checkAuthToken(authToken) {
     return result;
   }
 
+  // TODO(guillaume) verify if user id exists and role matches
+
   result = { id: split[0], role: split[1], expires: split[2] };
 
   return result;
 }
 
-// Verify auth token and set req.auth to the auth object
+/**
+ * Auth express middleware, verifies auth token and set req.auth to the auth object
+ */
 export async function requireAuth(req, res, next) {
   if (req.cookies.authToken) {
     const auth = checkAuthToken(req.cookies.authToken);
     if ('error' in auth) {
-      next({ code: 401, error: auth.error });
+      next({ code: 403, error: auth.error });
       return;
     }
     req.auth = auth;
