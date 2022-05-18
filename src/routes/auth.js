@@ -108,12 +108,12 @@ const DEFAULT_PROFILE_PICTURE = 'https://occ-0-784-778.1.nflxso.net/dnm/api/v6/K
 authRouter.post('/register', async (req, res, next) => {
   const { name, email, password } = req.body;
   if (!validateEmail(email)) {
-    next({ code: 400, error: 'IncorrectEmailError' });
+    res.send({ error: 'IncorrectEmailError' });
     return;
   }
   const search = await userColl.findOne({ email });
   if (search != null) {
-    next({ code: 400, error: 'AccountAlreadyExistsError' });
+    res.send({ error: 'AccountAlreadyExistsError' });
     return;
   }
   const result = await userColl.insertOne(
