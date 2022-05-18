@@ -70,15 +70,15 @@ userRouter.get('/', async (req, res, next) => {
 userRouter.post('/profiles', async (req, res, next) => {
   const { name, email, picture } = req.body;
   if (name === undefined || name === '') {
-    next({ code: 200, error: 'InvalidNameError' });
+    res.send({ error: 'InvalidNameError' });
     return;
   }
   if (email && !validateEmail(email)) {
-    next({ code: 200, error: 'InvalidEmailError' });
+    res.send({ error: 'InvalidEmailError' });
     return;
   }
   if (picture && !validateURL(picture)) {
-    next({ code: 200, error: 'InvalidUrlError' });
+    res.send({ error: 'InvalidUrlError' });
     return;
   }
   const profile = { name, email, picture };
@@ -129,15 +129,15 @@ userRouter.put('/profiles/:id', async (req, res, next) => {
     return;
   }
   if (name === '') {
-    next({ code: 200, error: 'InvalidNameError' });
+    res.send({ error: 'InvalidNameError' });
     return;
   }
   if (email && !validateEmail(email)) {
-    next({ code: 200, error: 'InvalidEmailError' });
+    res.send({ error: 'InvalidEmailError' });
     return;
   }
   if (picture && !validateURL(picture)) {
-    next({ code: 200, error: 'InvalidPictureError' });
+    res.send({ error: 'InvalidPictureError' });
     return;
   }
   const result = await user.updateProfile(req.auth.id, profileId, { name, email, picture });
