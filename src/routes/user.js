@@ -30,7 +30,7 @@ userRouter.use(express.json());
  *       - token: []
  */
 userRouter.get('/', async (req, res, next) => {
-  const result = user.findById(req.auth.id);
+  const result = await user.findById(req.auth.id);
   if (result == null) {
     next({ code: 403, error: 'AccountNotFound' });
     return;
