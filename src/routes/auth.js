@@ -132,3 +132,33 @@ authRouter.post('/register', async (req, res, next) => {
     next({ code: 500, error: 'Cannot insert new user' });
   }
 });
+
+/**
+ * @openapi
+ *
+ * /auth/logout:
+ *   post:
+ *     summary: "Logout"
+ *     operationId: auth.logout
+ *     responses:
+ *       "200":
+ *         description: "On success, logout the user"
+ *         headers:
+ *           Set-Cookie:
+ *             description: "Remove the auth token from client"
+ *             schema:
+ *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *       default:
+ *         $ref: "#/components/responses/default"
+ */
+
+authRouter.get('/logout', async (req, res) => {
+  res.cookie('authToken', '', {
+    sameSite: 'none', secure: true, path: '/', httpOnly: true, maxAge: -1,
+  });
+  res.send({ ok: 'ok' });
+});
