@@ -70,15 +70,15 @@ userRouter.get('/', async (req, res, next) => {
 userRouter.post('/profiles', async (req, res, next) => {
   const { name, email, picture } = req.body;
   if (name === undefined || name === '') {
-    next({ code: 400, error: 'InvalidNameError' });
+    next({ code: 200, error: 'InvalidNameError' });
     return;
   }
   if (email && !validateEmail(email)) {
-    next({ code: 400, error: 'InvalidEmailError' });
+    next({ code: 200, error: 'InvalidEmailError' });
     return;
   }
   if (picture && !validateURL(picture)) {
-    next({ code: 400, error: 'InvalidUrlError' });
+    next({ code: 200, error: 'InvalidUrlError' });
     return;
   }
   const profile = { name, email, picture };
@@ -129,20 +129,20 @@ userRouter.put('/profiles/:id', async (req, res, next) => {
     return;
   }
   if (name === '') {
-    next({ code: 400, error: 'InvalidNameError' });
+    next({ code: 200, error: 'InvalidNameError' });
     return;
   }
   if (email && !validateEmail(email)) {
-    next({ code: 400, error: 'InvalidEmailError' });
+    next({ code: 200, error: 'InvalidEmailError' });
     return;
   }
   if (picture && !validateURL(picture)) {
-    next({ code: 400, error: 'InvalidPictureError' });
+    next({ code: 200, error: 'InvalidPictureError' });
     return;
   }
   const result = await user.updateProfile(req.auth.id, profileId, { name, email, picture });
   if ('error' in result) {
-    next({ code: 400, error: result.error });
+    next({ code: 500, error: result.error });
     return;
   }
   res.send({ response: 'OK' });
