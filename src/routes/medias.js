@@ -188,7 +188,7 @@ mediaRouter.get('/:id/play', async (req, res, next) => {
   } catch (e) {
     next(e);
   } */
-  res.json({ src: `${downloadLink()}/media/bbb/bbb.mp4`, token: await downloadAuth('media/bbb') });
+  res.json({ src: `${downloadLink()}/medias/bbb/bbb_dash.mpd`, token: await downloadAuth('medias/bbb') });
 });
 
 /**

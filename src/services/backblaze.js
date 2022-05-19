@@ -21,6 +21,11 @@ export async function authorizeB2() {
   authTime = new Date();
 }
 
+/**
+ * Creates an auth token to download files after prefix
+ * @param {string} prefix
+ * @returns {Promise<string>} the auth token
+ */
 export async function downloadAuth(prefix) {
   const res = await fetch(`${auth.apiUrl}/b2api/v2/b2_get_download_authorization`, {
     method: 'POST',
