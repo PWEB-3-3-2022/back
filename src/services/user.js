@@ -73,7 +73,7 @@ export async function updateProfile(userId, profileId, profileUpdate) {
     const old = userCache[userId].profiles[profileId];
     userCache[userId].profiles[profileId] = {
       name: profileUpdate.name || old.name,
-      email: profileUpdate.email || old.email,
+      email: profileUpdate.email,
       picture: profileUpdate.picture || old.picture,
     };
   }
