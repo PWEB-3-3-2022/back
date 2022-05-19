@@ -40,7 +40,7 @@ export async function createProfile(userId, profile) {
     user = await findById(userId);
   }
   // A profile id is generated from a new ObjectId, basically random
-  const profileId = ObjectId.createFromTime(new Date().getSeconds()).toHexString();
+  const profileId = new ObjectId().toHexString();
   const newProfile = {
     name: profile.name,
     email: profile.email || user.email,
