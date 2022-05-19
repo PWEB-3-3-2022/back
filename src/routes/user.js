@@ -119,26 +119,32 @@ userRouter.post('/profiles', async (req, res, next) => {
 userRouter.put('/profiles/:id', async (req, res, next) => {
   const profileId = req.params.id;
   // Profile id is either 0 or an ObjectId
-  if ((profileId !== '0' && !ObjectId.isValid(profileId)) || profileId !== '0') {
+  if ((profileId !== '0' && !ObjectId.isValid(profileId)) || profileId === '0') {
     next({ code: 400, error: 'InvalidProfileIdError' });
     return;
   }
-  const { name, email, picture } = req.body;
-  if (!name && !email && !picture) {
+  const { email } = req.body;
+  let { name, picture } = req.body;
+  if (name === null && email === null && picture === null) {
     next({ code: 400, error: 'InvalidUpdateError' });
     return;
   }
-  if (name === '') {
-    res.send({ error: 'InvalidNameError' });
-    return;
+  const usr = await user.findById(req.auth.id);
+  if (!name) {
+    /* res.send({ error: 'InvalidNameError' });
+    return; */
+    name = usr.profiles[profileId].name;
   }
-  if (email && !validateEmail(email)) {
+  if (email === null || (email && !validateEmail(email))) {
     res.send({ error: 'InvalidEmailError' });
     return;
   }
   if (picture && !validateURL(picture)) {
     res.send({ error: 'InvalidPictureError' });
     return;
+  }
+  if (!picture) {
+    picture = usr.profiles[profileId].picture;
   }
   const result = await user.updateProfile(req.auth.id, profileId, { name, email, picture });
   if ('error' in result) {
@@ -168,7 +174,7 @@ userRouter.put('/profiles/:id', async (req, res, next) => {
 userRouter.delete('/profiles/:id', async (req, res, next) => {
   const profileId = req.params.id;
   // Profile id is either 0 or an ObjectId
-  if ((profileId !== '0' && !ObjectId.isValid(profileId)) || profileId !== '0') {
+  if ((profileId !== '0' && !ObjectId.isValid(profileId)) || profileId === '0') {
     next({ code: 400, error: 'InvalidProfileIdError' });
     return;
   }

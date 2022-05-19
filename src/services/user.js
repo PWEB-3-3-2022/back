@@ -87,7 +87,9 @@ export async function updateProfile(userId, profileId, profileUpdate) {
  * @returns {Promise<Object>}
  */
 export async function deleteProfile(userId, profileId) {
-  const result = await userColl.updateOne(idFilter(userId), { $unset: `profiles.${profileId}` });
+  const unsetValue = {};
+  unsetValue[`profiles.${profileId}`] = '';
+  const result = await userColl.updateOne(idFilter(userId), { $unset: unsetValue });
   if (result.modifiedCount !== 1) {
     return { error: 'UnkownIdError' };
   }
