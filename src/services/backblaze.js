@@ -40,6 +40,11 @@ export async function downloadAuth(prefix) {
   return data.authorizationToken;
 }
 
-export function downloadLink() {
-  return `${auth.downloadUrl}/file/${auth.allowed.bucketName}`;
+/**
+ * Get the download link to a file
+ * @param {string} file
+ * @returns {string}
+ */
+export function downloadLink(file) {
+  return `${auth.downloadUrl}/file/${auth.allowed.bucketName}/${file}`;
 }
